@@ -1,0 +1,45 @@
+# ── Python ──────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+venv/
+.venv/
+env/
+.env/
+
+# ── Environment (NEVER commit secrets) ──────────
+.env
+.env.local
+.env.*.local
+
+# ── Node / Frontend ──────────────────────────────
+node_modules/
+dist/
+build/
+.vite/
+*.local
+
+# ── OS ───────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── IDEs ─────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── Logs ─────────────────────────────────────────
+*.log
+logs/
+
+# ── Uploads (temp files) ─────────────────────────
+uploads/
+tmp/

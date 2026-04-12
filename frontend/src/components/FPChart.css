@@ -1,0 +1,81 @@
+.chart-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.donut-section {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  flex: 1;
+  min-width: 150px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+}
+
+.legend-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legend-key { color: var(--text); font-weight: 600; min-width: 28px; }
+.legend-val { color: var(--text-muted); margin-left: auto; }
+.legend-pct { color: var(--text-dim); min-width: 32px; text-align: right; }
+
+/* Bars */
+.bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.bar-key {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  width: 28px;
+  flex-shrink: 0;
+}
+
+.bar-track {
+  flex: 1;
+  height: 8px;
+  background: var(--surface2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  min-width: 4px;
+}
+
+.bar-count {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  min-width: 20px;
+  text-align: right;
+}
