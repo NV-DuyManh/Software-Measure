@@ -11,7 +11,7 @@ export default function Header() {
           <span className="logo-bracket">]</span>
         </div>
         <div className="header-meta">
-          <span className="badge">Groq · llama3-70b</span>
+          <span className="badge">Gemini · 3.0 Flash</span>
           <span className="badge badge-green">IFPUG Standard</span>
         </div>
       </div>
