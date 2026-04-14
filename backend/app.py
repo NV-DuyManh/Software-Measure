@@ -15,7 +15,6 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-
 def create_app() -> Flask:
     app = Flask(__name__)
     app.config["MAX_CONTENT_LENGTH"] = Config.MAX_CONTENT_LENGTH
@@ -37,9 +36,8 @@ def create_app() -> Flask:
     def method_not_allowed(e):
         return {"error": "Method not allowed."}, 405
 
-    logger.info(f"Flask app created. Model: {Config.GROQ_MODEL}")
+    logger.info(f"Flask app created. Model: {Config.GEMINI_MODEL}")
     return app
-
 
 if __name__ == "__main__":
     application = create_app()

@@ -1,7 +1,8 @@
 import json
 import time
 import logging
-import requests
+import google.generativeai as genai
+from google.generativeai.types import HarmCategory, HarmBlockThreshold
 from config import Config
 
 logger = logging.getLogger(__name__)
@@ -37,80 +38,60 @@ Output: {"EI": 2, "EO": 2, "EQ": 1, "ILF": 2, "EIF": 0}
 
 Now analyze the following requirement text and return ONLY the JSON object:"""
 
-
-def call_groq(chunk: str) -> dict:
+def call_llm(chunk: str) -> dict:
     """
-    Send a text chunk to Groq API and return parsed FP classification.
+    Send a text chunk to Gemini API and return parsed FP classification.
     Implements retry logic with exponential backoff.
     """
-    if not Config.GROQ_API_KEY:
-        raise ValueError("GROQ_API_KEY is not set in environment variables.")
+    if not Config.GEMINI_API_KEY:
+        raise ValueError("GEMINI_API_KEY is not set in environment variables.")
 
-    headers = {
-        "Authorization": f"Bearer {Config.GROQ_API_KEY}",
-        "Content-Type": "application/json",
-    }
-
-    payload = {
-        "model": Config.GROQ_MODEL,
-        "messages": [
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": chunk.strip()},
-        ],
-        "temperature": 0.1,
-        "max_tokens": 256,
-    }
+    genai.configure(api_key=Config.GEMINI_API_KEY)
+    
+    model = genai.GenerativeModel(
+        model_name=Config.GEMINI_MODEL,
+        system_instruction=SYSTEM_PROMPT
+    )
 
     last_error = None
-    for attempt in range(1, Config.GROQ_MAX_RETRIES + 1):
+    for attempt in range(1, Config.LLM_MAX_RETRIES + 1):
         try:
-            logger.info(f"Groq API call attempt {attempt}/{Config.GROQ_MAX_RETRIES}")
-            response = requests.post(
-                Config.GROQ_API_URL,
-                headers=headers,
-                json=payload,
-                timeout=Config.GROQ_TIMEOUT,
+            logger.info(f"Gemini API call attempt {attempt}/{Config.LLM_MAX_RETRIES}")
+            
+            response = model.generate_content(
+                chunk.strip(),
+                generation_config=genai.types.GenerationConfig(
+                    temperature=0.1,
+                    response_mime_type="application/json",
+                ),
+                safety_settings={
+                    HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
+                    HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
+                    HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
+                    HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
+                }
             )
 
-            if response.status_code == 429:
-                wait = 2 ** attempt
-                logger.warning(f"Rate limited. Waiting {wait}s before retry.")
-                time.sleep(wait)
-                continue
-
-            if response.status_code >= 500:
-                logger.warning(f"Groq server error {response.status_code}. Retrying.")
-                time.sleep(2 ** attempt)
-                continue
-
-            response.raise_for_status()
-
-            raw_content = response.json()["choices"][0]["message"]["content"].strip()
+            raw_content = response.text
             return _parse_fp_json(raw_content)
 
-        except requests.exceptions.Timeout:
-            last_error = "Request timed out"
-            logger.warning(f"Attempt {attempt} timed out.")
-            time.sleep(2)
-        except requests.exceptions.RequestException as e:
+        except Exception as e:
             last_error = str(e)
             logger.error(f"Request error on attempt {attempt}: {e}")
-            time.sleep(2)
-        except (KeyError, IndexError) as e:
-            last_error = f"Unexpected API response structure: {e}"
-            logger.error(last_error)
-            break
+            time.sleep(2 ** attempt)
 
-    raise RuntimeError(f"Groq API failed after {Config.GROQ_MAX_RETRIES} attempts. Last error: {last_error}")
-
+    raise RuntimeError(f"Gemini API failed after {Config.LLM_MAX_RETRIES} attempts. Last error: {last_error}")
 
 def _parse_fp_json(raw: str) -> dict:
     """Parse and validate the JSON returned by the LLM."""
-    # Strip markdown fences if present
     cleaned = raw.strip()
+    
     if cleaned.startswith("```"):
         lines = cleaned.splitlines()
-        cleaned = "\n".join(lines[1:-1] if lines[-1].strip() == "```" else lines[1:])
+        if lines[-1].strip() == "```":
+            cleaned = "\n".join(lines[1:-1])
+        else:
+            cleaned = "\n".join(lines[1:])
 
     try:
         data = json.loads(cleaned)
@@ -122,7 +103,6 @@ def _parse_fp_json(raw: str) -> dict:
     if missing:
         raise ValueError(f"LLM response missing keys: {missing}")
 
-    # Ensure all values are non-negative integers
     validated = {}
     for key in required_keys:
         val = data[key]
@@ -131,7 +111,6 @@ def _parse_fp_json(raw: str) -> dict:
         validated[key] = int(val)
 
     return validated
-
 
 def aggregate_classifications(classifications: list[dict]) -> dict:
     """Sum FP counts from multiple chunks."""
