@@ -1,22 +1,19 @@
 import logging
 from flask import Blueprint, request, jsonify
 from services.nlp_service import process_document
-from services.groq_service import call_groq, aggregate_classifications
+from services.gemini_service import call_llm, aggregate_classifications
 from services.fp_calculator import calculate_fp, recalculate
 from config import Config
 
 logger = logging.getLogger(__name__)
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
-
 def _allowed_file(filename: str) -> bool:
     return "." in filename and filename.rsplit(".", 1)[1].lower() in Config.ALLOWED_EXTENSIONS
 
-
 @api_bp.route("/health", methods=["GET"])
 def health():
-    return jsonify({"status": "ok", "model": Config.GROQ_MODEL}), 200
-
+    return jsonify({"status": "ok", "model": Config.GEMINI_MODEL}), 200
 
 @api_bp.route("/analyze", methods=["POST"])
 def analyze():
@@ -45,12 +42,12 @@ def analyze():
         chunks = process_document(file_bytes, filename)
         logger.info(f"Extracted {len(chunks)} chunk(s) from document.")
 
-        # Step 2: Groq classification per chunk
+        # Step 2: LLM classification per chunk
         classifications = []
         errors = []
         for i, chunk in enumerate(chunks):
             try:
-                result = call_groq(chunk)
+                result = call_llm(chunk)
                 classifications.append(result)
                 logger.info(f"Chunk {i+1}/{len(chunks)} classified: {result}")
             except Exception as e:
@@ -79,7 +76,6 @@ def analyze():
     except Exception as e:
         logger.exception("Unexpected error during analysis.")
         return jsonify({"error": "Internal server error.", "details": str(e)}), 500
-
 
 @api_bp.route("/recalculate", methods=["POST"])
 def recalculate_fp():
