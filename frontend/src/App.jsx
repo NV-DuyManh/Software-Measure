@@ -14,7 +14,7 @@ export default function App() {
   const steps = [
     "Extracting text from document…",
     "Cleaning and chunking content…",
-    "Sending to Groq LLM…",
+    "Sending to Gemini LLM…",
     "Classifying functional components…",
     "Computing Function Points…",
   ];
