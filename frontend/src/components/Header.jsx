@@ -18,7 +18,7 @@ export default function Header() {
 
         {/* Phần Meta nằm bên phải */}
         <div className="header-meta">
-          <span className="badge">Groq · llama3-70b</span>
+          <span className="badge">Gemini · 3.0 Flash</span>
           <span className="badge badge-green">IFPUG Standard</span>
           <ThemeToggle theme={theme} onToggle={cycleTheme} /> 
         </div>
