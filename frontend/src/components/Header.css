@@ -1,50 +1,59 @@
+/* frontend/src/components/Header.css */
 .header {
-  width: 100%;
-  padding: 0 2rem;
-  background: var(--bg);
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  /* FIX: Xóa box-shadow để header phẳng và hòa nhập tốt hơn theo ảnh 2 */
+  box-shadow: none; 
+  padding: 1rem 2rem; /* Thêm padding chuẩn */
 }
-
+/* Dàn trang: Logo bên trái, Meta bên phải */
 .header-inner {
-  max-width: 1200px;
+  display: flex;
+  justify-content: space-between; /* Đẩy 2 thành phần con ra xa nhau */
+  align-items: center;            /* Căn giữa theo chiều dọc */
+  width: 100%;
+  max-width: 1200px;              /* Hoặc bỏ dòng này nếu bạn muốn tràn viền 100% */
   margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.25rem 0;
 }
-
-.logo {
-  font-family: var(--font-display);
-  font-size: 1.4rem;
-  font-weight: 800;
-  letter-spacing: -0.01em;
+/* Nhóm các badge và nút theme toggle nằm ngang hàng nhau */
+.header-meta {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 1rem; /* Tạo khoảng cách đều giữa các nút */
 }
 
 .logo-bracket { color: var(--text-dim); }
-.logo-text { color: var(--text); }
-.logo-accent { color: var(--accent); }
-
-.header-meta { display: flex; gap: 0.5rem; align-items: center; }
+.logo-text    { color: var(--text); font-weight: 700; }
+.logo-accent  { color: var(--accent); }
 
 .badge {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  padding: 4px 10px;
-  border-radius: 20px;
   background: var(--surface2);
   border: 1px solid var(--border);
   color: var(--text-muted);
-  letter-spacing: 0.03em;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap; /* Tránh text trong badge bị xuống dòng */
 }
-.badge-green { border-color: var(--accent2); color: var(--accent2); }
+.badge-green {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #15803d;
+}
 
+/* Remove the gradient header-line — replace with nothing or a solid 1px */
 .header-line {
+  display: none;
+}
+[data-theme="dark"] .header-line {
+  display: block;
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--border), transparent);
+}
+/* badge-green dark mode override */
+[data-theme="dark"] .badge-green {
+  background: #0d2d1a;
+  border-color: #0f6e56;
+  color: #00ff88;
 }

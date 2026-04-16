@@ -1,3 +1,4 @@
+/* Dashboard.css */
 .dashboard {
   width: 100%;
   max-width: 1200px;
@@ -22,35 +23,30 @@
 .file-chip {
   background: var(--surface2);
   border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 4px 14px;
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
   color: var(--text);
+  border-radius: var(--radius-sm); /* FIX: Thêm bo góc */
+  padding: 0.3rem 0.6rem;
 }
+.chunk-info { color: var(--text-muted); }
+.chunk-warn { color: var(--accent3); }
 
-.chunk-info {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: var(--text-muted);
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm); /* FIX: Thêm bo góc */
+  box-shadow: 0 2px 4px rgba(37,99,235,0.25);
+  padding: 0.5rem 1rem;
 }
-
-.chunk-warn {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: var(--accent3);
-}
+.btn-primary:hover { background: #1d4ed8; opacity: 1; }
 
 .btn-ghost {
-  background: transparent;
+  background: var(--surface);
   border: 1px solid var(--border);
   color: var(--text-muted);
-  padding: 0.5rem 1.25rem;
-  border-radius: var(--radius-sm);
-  font-family: var(--font-display);
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: border-color 0.2s, color 0.2s;
+  box-shadow: var(--shadow);
+  border-radius: var(--radius-sm); /* FIX: Thêm bo góc */
+  padding: 0.5rem 1rem;
 }
 .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
 
@@ -66,14 +62,11 @@
 .kpi-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 1.5rem 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  transition: border-color 0.2s;
+  box-shadow: var(--shadow);
+  border-radius: var(--radius); /* FIX: Bo góc card */
+  padding: 1.5rem;
 }
-.kpi-card:hover { border-color: var(--border-bright); }
+.kpi-card:hover { box-shadow: var(--shadow-md); border-color: var(--border-bright); }
 
 .kpi-label { font-size: 0.78rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; }
 .kpi-value { font-size: 2rem; font-weight: 800; line-height: 1.1; }
@@ -92,26 +85,21 @@
 .chart-panel, .editor-panel {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 1.75rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
+  box-shadow: var(--shadow);
+  border-radius: var(--radius); /* FIX: Bo góc panel */
+  padding: 1.5rem;
 }
 
 .panel-title { font-size: 1rem; font-weight: 700; color: var(--text); }
-.panel-sub { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin-top: -0.5rem; }
+.panel-sub { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin-top: 0.25rem; }
 
 /* Formula */
 .formula-box {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
   background: var(--surface2);
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 0.75rem 1.25rem;
-  flex-wrap: wrap;
+  border-radius: var(--radius-sm); /* FIX: Bo góc box */
+  padding: 1rem;
+  margin-top: 1rem;
 }
 
 .mono-label { font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted); }
@@ -121,19 +109,18 @@
 .mono-val.accent { color: var(--accent); font-size: 1.1rem; }
 
 /* Component editor */
-.component-list { display: flex; flex-direction: column; gap: 0.75rem; }
+.component-list { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; }
 
 .comp-row {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.875rem 1rem;
   background: var(--surface2);
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  transition: border-color 0.2s;
+  border-radius: var(--radius-sm); /* FIX: Bo góc */
+  padding: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-.comp-row:hover { border-color: var(--border-bright); }
+.comp-row:hover { border-color: var(--border-bright); box-shadow: var(--shadow); }
 
 .comp-info {
   flex: 1;
@@ -147,56 +134,42 @@
 .comp-name { font-size: 0.78rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .comp-weight { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-dim); }
 
-.comp-controls {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
+.comp-controls { display: flex; align-items: center; gap: 0.4rem; }
 
 .stepper {
-  width: 28px; height: 28px;
-  background: var(--border);
-  border: none;
-  border-radius: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
   color: var(--text);
-  font-size: 1rem;
+  box-shadow: var(--shadow);
+  border-radius: 4px; /* FIX: Chỉnh nhẹ viền nút cộng trừ */
+  width: 24px;
+  height: 24px;
   cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: background 0.15s;
-  line-height: 1;
 }
-.stepper:hover { background: var(--border-bright); }
+.stepper:hover { background: var(--surface2); border-color: var(--border-bright); }
 
 .count-input {
-  width: 52px;
-  background: var(--bg);
+  background: var(--surface);
   border: 1px solid var(--border-bright);
-  border-radius: 6px;
   color: var(--text);
-  font-family: var(--font-mono);
-  font-size: 0.95rem;
-  font-weight: 600;
+  border-radius: 4px; /* FIX */
+  width: 40px;
   text-align: center;
-  padding: 4px 0;
-  outline: none;
+  padding: 0.2rem;
 }
-.count-input:focus { border-color: var(--accent); }
-/* hide number spinners */
-.count-input::-webkit-inner-spin-button,
-.count-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+.count-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); outline: none; }
 
-.comp-pts {
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  min-width: 48px;
-  text-align: right;
-}
+.count-input::-webkit-inner-spin-button,
+.count-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+.comp-pts { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted); min-width: 48px; text-align: right; }
 
 .recalc-btn {
   width: 100%;
   padding: 0.9rem;
   font-size: 1rem;
   letter-spacing: 0.06em;
+  margin-top: 1.5rem;
+  border-radius: var(--radius-sm); /* FIX: Bo góc nút */
 }
 .recalc-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }

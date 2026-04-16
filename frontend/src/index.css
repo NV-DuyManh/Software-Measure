@@ -1,38 +1,120 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* ─── LIGHT THEME (default) ─────────────────────────────────────── */
 :root {
-  --bg: #080c10;
-  --surface: #0e1419;
-  --surface2: #141c24;
-  --border: #1e2d3d;
-  --border-bright: #2a3f55;
-  --accent: #00d4ff;
-  --accent2: #00ff88;
-  --accent3: #ff6b35;
-  --text: #e2eaf3;
-  --text-muted: #5a7a96;
-  --text-dim: #3a5a76;
-  --EI: #00d4ff;
-  --EO: #00ff88;
-  --EQ: #a78bfa;
-  --ILF: #ff6b35;
-  --EIF: #ffd93d;
-  --font-display: 'Syne', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
-  --radius: 12px;
+  --bg:            #fdfdfd; /*nơi đổi màu BG*/
+  --surface:       #ffffff;
+  --surface2:      #f3f4f6;
+  --border:        #e5e7eb;
+  --border-bright: #d1d5db;
+
+  --accent:  #2563eb;
+  --accent2: #16a34a;
+  --accent3: #ea580c;
+
+  --text:       #111827;
+  --text-muted: #6b7280;
+  --text-dim:   #9ca3af;
+
+  --EI:  #2563eb;
+  --EO:  #16a34a;
+  --EQ:  #7c3aed;
+  --ILF: #ea580c;
+  --EIF: #ca8a04;
+
+  --shadow:    0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.03);
+
+  --font-display: 'Inter', 'Syne', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  --radius:    12px;
   --radius-sm: 8px;
 }
 
+/* ─── DARK THEME ─────────────────────────────────────────────────── */
+[data-theme="dark"] {
+  --bg:            #080c10;
+  --surface:       #0e1419;
+  --surface2:      #141c24;
+  --border:        #1e2d3d;
+  --border-bright: #2a3f55;
+
+  --accent:  #00d4ff;
+  --accent2: #00ff88;
+  --accent3: #ff6b35;
+
+  --text:       #e2eaf3;
+  --text-muted: #5a7a96;
+  --text-dim:   #3a5a76;
+
+  --EI:  #00d4ff;
+  --EO:  #00ff88;
+  --EQ:  #a78bfa;
+  --ILF: #ff6b35;
+  --EIF: #ffd93d;
+
+  --shadow:    0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Theme 3: Mint Pink */
+[data-theme="mint-pink"] {
+  --bg: linear-gradient(-225deg, #E3FDF5 0%, #FFE6FA 100%);
+  --surface: rgba(255, 255, 255, 0.75); /* Bán trong suốt tạo hiệu ứng kính */
+  --surface2: rgba(255, 255, 255, 0.5);
+  --border: rgba(255, 255, 255, 0.6);
+  --border-bright: #ffffff;
+  --text: #111827;
+  --text-muted: #6b7280;
+}
+
+/* Theme 4: Rose Blue */
+[data-theme="rose-blue"] {
+  --bg: linear-gradient(to top, #f3e7e9 0%, #e3eeff 99%, #e3eeff 100%);
+  --surface: rgba(255, 255, 255, 0.75);
+  --surface2: rgba(255, 255, 255, 0.5);
+  --border: rgba(255, 255, 255, 0.6);
+  --border-bright: #ffffff;
+  --text: #111827;
+  --text-muted: #6b7280;
+}
+
+/* Theme 5: Peach */
+[data-theme="peach"] {
+  --bg: linear-gradient(to top, #feada6 0%, #f5efef 100%);
+  --surface: rgba(255, 255, 255, 0.75);
+  --surface2: rgba(255, 255, 255, 0.5);
+  --border: rgba(255, 255, 255, 0.6);
+  --border-bright: #ffffff;
+  --text: #111827;
+  --text-muted: #6b7280;
+}
+
+/* ─── BASE ───────────────────────────────────────────────────────── */
 html { scroll-behavior: smooth; }
 
 body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-display);
-  min-height: 100vh;
-  overflow-x: hidden;
+  background:   var(--bg);
+  color:        var(--text);
+  font-family:  var(--font-display);
+  min-height:   100vh;
+  overflow-x:   hidden;
+  /* smooth theme transition */
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* Propagate transition to common surfaces */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, box-shadow;
+  transition-duration: 0.25s;
+  transition-timing-function: ease;
+}
+
+/* But don't slow down animations that should stay fast */
+button, input, .spinner-ring, [class*="bar-fill"] {
+  transition-duration: 0.15s;
 }
 
 ::-webkit-scrollbar { width: 6px; }

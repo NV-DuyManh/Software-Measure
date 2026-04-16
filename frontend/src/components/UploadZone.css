@@ -1,65 +1,73 @@
 .upload-wrap {
   width: 100%;
-  max-width: 800px;
+  max-width: 900px; /* FIX: Tăng độ rộng để chứa dropzone to hơn */
   display: flex;
   flex-direction: column;
   gap: 2.5rem;
   align-items: center;
+  margin: 0 auto;
 }
 
 .upload-hero { text-align: center; }
 
 .upload-hero h1 {
-  font-size: clamp(2.4rem, 5vw, 3.8rem);
+  /* FIX: Chỉnh lại size, xóa hiệu ứng stretch/bẹt của chữ */
+  font-size: clamp(2rem, 4vw, 3.2rem); 
   font-weight: 800;
-  line-height: 1.1;
-  letter-spacing: -0.03em;
-  margin-bottom: 1rem;
+  line-height: 1.2;
+  letter-spacing: normal; 
+  margin-bottom: 0.5rem;
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  /* FIX: Chữ Estimation màu xanh dương thay vì gradient như ảnh 1 */
+  color: var(--accent); 
+  background: none;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: unset;
+  background-clip: unset;
 }
 
 .upload-sub {
   color: var(--text-muted);
-  font-size: 1rem;
-  max-width: 520px;
+  font-size: 1.1rem;
+  max-width: 600px;
   line-height: 1.6;
-  margin: 0 auto;
+  margin: 1rem auto;
 }
 
 .dropzone {
-  width: 100%;
-  border: 2px dashed var(--border-bright);
-  border-radius: var(--radius);
-  padding: 3.5rem 2rem;
+  background: var(--surface);
+  /* FIX: Border đứt nét rộng, nhạt và bo góc 16px */
+  border: 2px dashed #cbd5e1; 
+  border-radius: 16px; 
+  padding: 3rem 2rem; /* Tăng padding để ô to ra */
+  width: 100%; /* Căn đều 100% không gian */
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1rem;
+  box-shadow: var(--shadow);
+  transition: all 0.2s ease;
   cursor: pointer;
-  transition: border-color 0.2s, background 0.2s;
-  background: var(--surface);
 }
 
 .dropzone:hover, .dropzone.drag-active {
   border-color: var(--accent);
-  background: rgba(0, 212, 255, 0.04);
+  background: #eff6ff;          /* blue-50 tint on hover */
 }
 
-.dz-icon { color: var(--accent); margin-bottom: 0.5rem; }
-.dz-label { font-size: 1.05rem; font-weight: 600; color: var(--text); }
-.dz-sub { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted); }
+/* FIX: Tăng size icon và làm text nổi bật hơn */
+.dz-icon  { color: var(--accent); font-size: 2.5rem; margin-bottom: 0.5rem; }
+.dz-label { color: var(--text); font-weight: 700; font-size: 1.25rem; }
+.dz-sub   { color: var(--text-muted); font-family: var(--font-mono); font-size: 0.9rem; }
 
 .capabilities {
   width: 100%;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 0.75rem;
+  gap: 1rem; /* FIX: Tăng khoảng cách (gap) giữa các thẻ */
 }
 
 @media (max-width: 700px) {
@@ -69,13 +77,28 @@
 .cap-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 1rem 0.75rem;
+  box-shadow: var(--shadow);
+  /* FIX: Bo góc và thêm padding cho từng thẻ */
+  border-radius: var(--radius);
+  padding: 1.2rem 1rem; 
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 0.5rem;
 }
 
-.cap-code { font-family: var(--font-mono); font-size: 0.85rem; font-weight: 600; }
-.cap-label { font-size: 0.78rem; font-weight: 600; color: var(--text); }
-.cap-desc { font-size: 0.72rem; color: var(--text-muted); line-height: 1.4; }
+.cap-code { 
+  font-family: var(--font-mono); 
+  font-size: 0.9rem; 
+  font-weight: 700; 
+}
+
+/* FIX: Tự động lên màu cho các chữ EI, EO, EQ, ILF, EIF giống ảnh 2 
+   (Nếu trong HTML bạn có gán class tương ứng, hoặc dùng pseudo-class như dưới đây) */
+.cap-card:nth-child(1) .cap-code { color: var(--EI); }
+.cap-card:nth-child(2) .cap-code { color: var(--EO); }
+.cap-card:nth-child(3) .cap-code { color: var(--EQ); }
+.cap-card:nth-child(4) .cap-code { color: var(--ILF); }
+.cap-card:nth-child(5) .cap-code { color: var(--EIF); }
+
+.cap-label { color: var(--text); font-weight: 700; font-size: 0.95rem; }
+.cap-desc  { color: var(--text-muted); font-size: 0.8rem; line-height: 1.4; }
