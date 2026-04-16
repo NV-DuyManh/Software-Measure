@@ -4,11 +4,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Config:
-    GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
-    GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
-    GROQ_MODEL = "llama3-70b-8192"
-    GROQ_TIMEOUT = 10
-    GROQ_MAX_RETRIES = 3
+    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+    # Chốt đơn Gemini 2.5 Flash theo ý bạn!
+    GEMINI_MODEL = "gemini-2.5-flash" 
+    LLM_TIMEOUT = 15
+    LLM_MAX_RETRIES = 3
 
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16 MB
     ALLOWED_EXTENSIONS = {"pdf", "docx"}
