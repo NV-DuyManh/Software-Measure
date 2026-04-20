@@ -1,9 +1,17 @@
+# backend/requirements.txt
 flask==3.0.3
 flask-cors==4.0.1
 python-dotenv==1.0.1
-requests==2.32.3
+
+# ── Gemini SDK mới (thay thế google-generativeai đã deprecated) ──
+google-genai>=1.0.0
+
+# ── Document parsing ─────────────────────────────────────────────
 pdfplumber==0.11.4
 python-docx==1.1.2
+
+# ── NLP ──────────────────────────────────────────────────────────
 nltk==3.9.1
+
+# ── Production server ────────────────────────────────────────────
 gunicorn==22.0.0
-google-generativeai>=0.8.0

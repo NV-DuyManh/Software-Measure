@@ -1,0 +1,300 @@
+# HƯỚNG DẪN NAVICAT CHI TIẾT — FP ESTIMATOR
+# =====================================================
+# Đọc file này từ đầu đến cuối, làm theo từng bước.
+# =====================================================
+
+
+══════════════════════════════════════════════════════
+BƯỚC 1 — CÀI ĐẶT MySQL
+══════════════════════════════════════════════════════
+
+1. Truy cập: https://dev.mysql.com/downloads/mysql/
+2. Chọn: "MySQL Community Server"
+3. Chọn hệ điều hành của bạn (Windows / macOS)
+4. Tải file cài đặt (khoảng 400MB)
+
+Trong quá trình cài đặt:
+  ✔ Chọn "Developer Default" (bao gồm tất cả cần thiết)
+  ✔ Đặt ROOT PASSWORD (ví dụ: MyPass123!)
+     → GHI NHỚ mật khẩu này, sẽ dùng sau
+  ✔ Port giữ nguyên: 3306
+  ✔ Nhấn Next → Execute → Finish
+
+Kiểm tra MySQL đã chạy:
+  Windows: Mở Task Manager → Services → tìm "MySQL80" → Status: Running
+  macOS:   System Preferences → MySQL → Status: Running
+
+
+══════════════════════════════════════════════════════
+BƯỚC 2 — CÀI ĐẶT NAVICAT
+══════════════════════════════════════════════════════
+
+1. Truy cập: https://navicat.com/en/download/navicat-premium
+2. Tải bản dùng thử 14 ngày (miễn phí)
+   Hoặc dùng: Navicat for MySQL (nhẹ hơn, chỉ cho MySQL)
+3. Cài đặt bình thường → mở Navicat lên
+
+
+══════════════════════════════════════════════════════
+BƯỚC 3 — KẾT NỐI NAVICAT VỚI MYSQL
+══════════════════════════════════════════════════════
+
+Trong Navicat:
+
+1. Nhấn nút "Connection" ở góc trên bên trái
+   (biểu tượng ổ cắm điện màu xanh)
+
+2. Chọn "MySQL" từ danh sách
+
+3. Điền thông tin:
+   ┌─────────────────────────────────────┐
+   │ Connection Name: FP Estimator Local │
+   │ Host:            127.0.0.1          │
+   │ Port:            3306               │
+   │ Username:        root               │
+   │ Password:        [mật khẩu của bạn] │
+   └─────────────────────────────────────┘
+
+4. Nhấn "Test Connection"
+   → Phải thấy: "Connection Successful" màu xanh ✓
+   → Nếu lỗi: kiểm tra lại MySQL có đang chạy không
+
+5. Nhấn "OK" để lưu kết nối
+
+→ Bên trái sẽ xuất hiện "FP Estimator Local"
+
+
+══════════════════════════════════════════════════════
+BƯỚC 4 — TẠO DATABASE
+══════════════════════════════════════════════════════
+
+CÁCH 1 (bằng giao diện — dễ nhất):
+  1. Double-click vào "FP Estimator Local" để mở kết nối
+  2. Click chuột PHẢI vào "FP Estimator Local"
+  3. Chọn "New Database"
+  4. Điền:
+     ┌──────────────────────────────────┐
+     │ Database Name: fp_estimator_db   │
+     │ Character Set: utf8mb4           │
+     │ Collation:     utf8mb4_unicode_ci│
+     └──────────────────────────────────┘
+  5. Nhấn OK
+  → Database "fp_estimator_db" xuất hiện bên trái ✓
+
+CÁCH 2 (bằng SQL):
+  Xem Bước 5 bên dưới
+
+
+══════════════════════════════════════════════════════
+BƯỚC 5 — CHẠY FILE SQL ĐỂ TẠO BẢNG
+══════════════════════════════════════════════════════
+
+1. Double-click vào "fp_estimator_db" để chọn nó
+   (tên sẽ đậm lên = đang được chọn)
+
+2. Nhấn "Query" trên thanh toolbar (biểu tượng tờ giấy)
+   Hoặc: Menu Query → New Query
+
+3. Cửa sổ Query Editor mở ra
+
+4. Mở file: database/schema.sql (từ project của bạn)
+   Copy toàn bộ nội dung
+
+5. Paste vào Query Editor
+
+6. Nhấn Ctrl+Shift+R (Windows) hoặc Cmd+Shift+R (Mac)
+   Hoặc nhấn nút "Run" (tam giác xanh ▶)
+
+7. Kết quả hiện ở panel dưới:
+   → "Affected rows: 0" với mỗi CREATE TABLE = thành công ✓
+
+8. Nhấn F5 để Refresh
+   → Bên trái, mở "fp_estimator_db" → "Tables"
+   → Phải thấy 4 bảng:
+      ✓ users
+      ✓ uploads
+      ✓ fp_results
+      ✓ vaf_factors
+
+
+══════════════════════════════════════════════════════
+BƯỚC 6 — XEM VÀ KIỂM TRA BẢNG
+══════════════════════════════════════════════════════
+
+Xem cấu trúc bảng:
+  Double-click vào tên bảng (ví dụ: "users")
+  → Tab "Fields": hiện danh sách cột
+  → Tab "Indexes": hiện các index
+  → Tab "Foreign Keys": hiện các liên kết
+
+Xem dữ liệu trong bảng:
+  Double-click vào bảng → Tab "Data"
+  → Lúc đầu trống (chưa có dữ liệu)
+  → Sau khi test app, dữ liệu sẽ xuất hiện ở đây
+
+
+══════════════════════════════════════════════════════
+BƯỚC 7 — QUERY HỮU ÍCH ĐỂ KIỂM TRA
+══════════════════════════════════════════════════════
+
+Mở Query Editor (Bước 5) và chạy từng query này:
+
+── Xem tất cả users đã đăng ký ──────────────────────
+SELECT id, username, email, created_at
+FROM users
+ORDER BY created_at DESC;
+
+── Xem lịch sử upload của từng user ─────────────────
+SELECT
+  u.id         AS upload_id,
+  us.username,
+  u.original_name,
+  u.uploaded_at,
+  r.fp,
+  r.vaf,
+  r.cost
+FROM uploads u
+JOIN users us ON us.id = u.user_id
+LEFT JOIN fp_results r ON r.upload_id = u.id
+ORDER BY u.uploaded_at DESC;
+
+── Xem chi tiết 1 kết quả FP ────────────────────────
+SELECT
+  r.*,
+  vf.f1, vf.f2, vf.f3, vf.f4, vf.f5,
+  vf.f6, vf.f7, vf.f8, vf.f9, vf.f10,
+  vf.f11, vf.f12, vf.f13, vf.f14
+FROM fp_results r
+JOIN vaf_factors vf ON vf.result_id = r.id
+WHERE r.id = 1;   -- thay 1 bằng ID bạn muốn xem
+
+── Xóa toàn bộ dữ liệu test (reset sạch) ────────────
+-- Chạy theo thứ tự này (do có FOREIGN KEY):
+DELETE FROM vaf_factors;
+DELETE FROM fp_results;
+DELETE FROM uploads;
+DELETE FROM users;
+-- Reset auto-increment:
+ALTER TABLE vaf_factors AUTO_INCREMENT = 1;
+ALTER TABLE fp_results  AUTO_INCREMENT = 1;
+ALTER TABLE uploads     AUTO_INCREMENT = 1;
+ALTER TABLE users       AUTO_INCREMENT = 1;
+
+── Đếm số lượng mỗi loại ────────────────────────────
+SELECT
+  (SELECT COUNT(*) FROM users)       AS total_users,
+  (SELECT COUNT(*) FROM uploads)     AS total_uploads,
+  (SELECT COUNT(*) FROM fp_results)  AS total_results;
+
+
+══════════════════════════════════════════════════════
+BƯỚC 8 — CẤU HÌNH .ENV CHO NODE BACKEND
+══════════════════════════════════════════════════════
+
+Mở file: backend-node/.env.example
+Tạo bản copy tên là: backend-node/.env
+Điền thông tin thật:
+
+  DB_HOST=127.0.0.1
+  DB_PORT=3306
+  DB_USER=root
+  DB_PASSWORD=mật_khẩu_MySQL_của_bạn
+  DB_NAME=fp_estimator_db
+
+  JWT_SECRET=một_chuỗi_dài_ngẫu_nhiên_ít_nhất_32_ký_tự
+  JWT_EXPIRES_IN=7d
+
+  PORT=3001
+  PYTHON_API_URL=http://localhost:5000
+  NODE_ENV=development
+
+Lưu file lại.
+
+
+══════════════════════════════════════════════════════
+BƯỚC 9 — CHẠY TOÀN BỘ HỆ THỐNG
+══════════════════════════════════════════════════════
+
+Mở 4 terminal riêng biệt:
+
+── Terminal 1: Python Flask (AI) ────────────────────
+cd backend
+venv\Scripts\activate         (Windows)
+source venv/bin/activate      (macOS/Linux)
+python app.py
+→ Running on http://localhost:5000 ✓
+
+── Terminal 2: Node.js (DB + Auth) ──────────────────
+cd backend-node
+npm install                   (lần đầu tiên)
+node server.js
+→ ✅ MySQL connected: fp_estimator_db
+→ 🚀 Node backend running → http://localhost:3001 ✓
+
+── Terminal 3: React Frontend ───────────────────────
+cd frontend
+npm install                   (nếu chưa)
+npm run dev
+→ Running on http://localhost:3000 ✓
+
+── Terminal 4: Navicat (luôn mở để theo dõi DB) ─────
+Giữ Navicat mở ở tab Data của bảng "uploads"
+Nhấn F5 để refresh sau mỗi lần test
+
+
+══════════════════════════════════════════════════════
+BƯỚC 10 — KIỂM TRA TOÀN BỘ
+══════════════════════════════════════════════════════
+
+1. Mở http://localhost:3000
+2. Nhấn "Sign in" → Register tài khoản mới
+3. Check Navicat → bảng "users" → F5 → thấy user mới ✓
+4. Upload file PDF/DOCX
+5. Check Navicat:
+   → bảng "uploads"    → F5 → thấy file vừa upload ✓
+   → bảng "fp_results" → F5 → thấy kết quả FP ✓
+   → bảng "vaf_factors"→ F5 → thấy 14 giá trị mặc định 0 ✓
+6. Sidebar bên trái → thấy file vừa upload
+7. Chỉnh VAF factors → nhấn Recalculate
+8. Check Navicat → bảng "fp_results" → giá trị VAF/FP đã đổi ✓
+9. Nhấn Export Excel hoặc PDF → file tải về ✓
+
+
+══════════════════════════════════════════════════════
+XỬ LÝ LỖI THƯỜNG GẶP
+══════════════════════════════════════════════════════
+
+Lỗi: "ER_ACCESS_DENIED_ERROR"
+  → Sai mật khẩu MySQL trong file .env
+  → Kiểm tra lại DB_PASSWORD
+
+Lỗi: "ECONNREFUSED 127.0.0.1:3306"
+  → MySQL chưa chạy
+  → Windows: Start → Services → MySQL80 → Start
+  → macOS: System Preferences → MySQL → Start
+
+Lỗi: "Table doesn't exist"
+  → Chưa chạy file schema.sql
+  → Làm lại Bước 5
+
+Lỗi: "jwt malformed" trên frontend
+  → Token cũ còn trong localStorage
+  → Mở DevTools → Application → Local Storage → xóa "fp_token"
+  → Đăng nhập lại
+
+Lỗi CORS từ Node:
+  → Kiểm tra frontend đang chạy đúng port 3000
+  → Kiểm tra VITE_NODE_API_URL=http://localhost:3001 trong .env
+
+
+══════════════════════════════════════════════════════
+MẸO NAVICAT HỮU ÍCH
+══════════════════════════════════════════════════════
+
+• Ctrl+R (trong Query Editor) = chạy query đang chọn
+• F5 = refresh dữ liệu bảng
+• Ctrl+/ = comment/uncomment dòng trong Query Editor
+• Click chuột phải vào bảng → "Design Table" = xem cấu trúc
+• Click chuột phải vào DB → "New Query" = query nhanh
+• Double-click ô dữ liệu = sửa trực tiếp (cẩn thận!)
+• Ctrl+Z trong Data view = undo thay đổi chưa lưu

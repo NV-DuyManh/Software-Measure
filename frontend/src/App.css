@@ -1,42 +1,30 @@
-/* App.css */
-.app { min-height: 100vh; display: flex; flex-direction: column; }
+/* frontend/src/App.css
+   Thêm các rules này vào cuối file App.css hiện tại của bạn
+   (KHÔNG xóa phần cũ, chỉ paste thêm vào cuối)
+*/
 
-.main {
+/* ── Shell layout: sidebar bên trái + nội dung chính bên phải ── */
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: row;
+}
+
+.app-main {
   flex: 1;
+  min-width: 0;           /* quan trọng: ngăn overflow */
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem 1rem;
 }
 
-/* Loading */
-.loading-screen { display: flex; flex-direction: column; align-items: center; gap: 2rem; }
-
-.spinner-ring { border-color: var(--border); border-top-color: var(--accent); border-right-color: var(--accent2); }
+/* ── Spinner (nếu chưa có trong App.css cũ) ── */
+.spinner-ring {
+  width: 72px;
+  height: 72px;
+  border: 3px solid var(--border);
+  border-top-color:  var(--accent);
+  border-right-color: var(--accent2);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
 @keyframes spin { to { transform: rotate(360deg); } }
-
-/* Loading step text */
-.loading-step { color: var(--accent); font-weight: 600; }
-
-.step-dots { display: flex; gap: 8px; }
-.dot { background: var(--border); width: 8px; height: 8px; border-radius: 50%; } /* FIX: Bổ sung style cho dot */
-.dot.active { background: var(--accent); }
-
-/* Error screen */
-.error-icon { color: var(--accent3); font-size: 3rem; }
-.error-msg  { background: var(--surface); border: 1px solid var(--border); color: var(--text-muted); }
-
-.error-screen h2 { font-size: 1.5rem; font-weight: 700; color: var(--text); }
-
-.error-msg {
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 1rem;
-  width: 100%;
-  word-break: break-word;
-}

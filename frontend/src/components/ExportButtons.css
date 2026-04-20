@@ -1,0 +1,47 @@
+/* frontend/src/components/ExportButtons.css */
+
+.export-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 0 0 0.5rem 0;
+}
+
+.export-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.export-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.export-btn:hover {
+  background: var(--surface2);
+}
+
+.export-excel:hover {
+  border-color: #16a34a;
+  color: #16a34a;
+}
+
+.export-pdf:hover {
+  border-color: var(--accent3);
+  color: var(--accent3);
+}

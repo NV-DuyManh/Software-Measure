@@ -1,3 +1,4 @@
+# backend/app.py
 import logging
 import sys
 from flask import Flask
@@ -5,9 +6,7 @@ from flask_cors import CORS
 from config import Config
 from routes import api_bp
 
-# ---------------------------------------------------------------------------
-# Logging
-# ---------------------------------------------------------------------------
+# ── Logging ──────────────────────────────────────────────────────────
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
@@ -15,11 +14,12 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
 def create_app() -> Flask:
     app = Flask(__name__)
     app.config["MAX_CONTENT_LENGTH"] = Config.MAX_CONTENT_LENGTH
 
-    # Allow requests from React dev server
+    # Cho phép React frontend kết nối
     CORS(app, resources={r"/api/*": {"origins": "*"}})
 
     app.register_blueprint(api_bp)
@@ -38,6 +38,7 @@ def create_app() -> Flask:
 
     logger.info(f"Flask app created. Model: {Config.GEMINI_MODEL}")
     return app
+
 
 if __name__ == "__main__":
     application = create_app()

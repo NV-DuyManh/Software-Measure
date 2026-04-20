@@ -1,8 +1,13 @@
+# backend/services/gemini_service.py
+# ─────────────────────────────────────────────────────────────────────
+#  Đã chuyển sang google.genai (SDK mới, thay thế google.generativeai)
+#  Cài đặt: pip install google-genai --break-system-packages
+# ─────────────────────────────────────────────────────────────────────
 import json
 import time
 import logging
-import google.generativeai as genai
-from google.generativeai.types import HarmCategory, HarmBlockThreshold
+from google import genai
+from google.genai import types
 from config import Config
 
 logger = logging.getLogger(__name__)
@@ -10,9 +15,9 @@ logger = logging.getLogger(__name__)
 SYSTEM_PROMPT = """You are a certified Function Point Analysis (FPA) expert with 20+ years of experience applying the IFPUG standard.
 
 Your task is to analyze software requirement text and classify functional components into exactly these five categories:
-- EI  (External Input):      User inputs that add/change/delete data in an ILF (forms, uploads, API writes)
-- EO  (External Output):     Outputs that retrieve data AND apply logic/calculations (reports, computed results, exports)
-- EQ  (External Inquiry):    Simple data retrievals with no derived calculations (search, lookup, read-only views)
+- EI  (External Input):       User inputs that add/change/delete data in an ILF (forms, uploads, API writes)
+- EO  (External Output):      Outputs that retrieve data AND apply logic/calculations (reports, computed results, exports)
+- EQ  (External Inquiry):     Simple data retrievals with no derived calculations (search, lookup, read-only views)
 - ILF (Internal Logical File): Logical groups of data maintained internally (tables, entities, master data stores)
 - EIF (External Interface File): Data maintained by another application that this system reads (3rd-party APIs, external DBs)
 
@@ -38,60 +43,16 @@ Output: {"EI": 2, "EO": 2, "EQ": 1, "ILF": 2, "EIF": 0}
 
 Now analyze the following requirement text and return ONLY the JSON object:"""
 
-def call_llm(chunk: str) -> dict:
-    """
-    Send a text chunk to Gemini API and return parsed FP classification.
-    Implements retry logic with exponential backoff.
-    """
-    if not Config.GEMINI_API_KEY:
-        raise ValueError("GEMINI_API_KEY is not set in environment variables.")
-
-    genai.configure(api_key=Config.GEMINI_API_KEY)
-    
-    model = genai.GenerativeModel(
-        model_name=Config.GEMINI_MODEL,
-        system_instruction=SYSTEM_PROMPT
-    )
-
-    last_error = None
-    for attempt in range(1, Config.LLM_MAX_RETRIES + 1):
-        try:
-            logger.info(f"Gemini API call attempt {attempt}/{Config.LLM_MAX_RETRIES}")
-            
-            response = model.generate_content(
-                chunk.strip(),
-                generation_config=genai.types.GenerationConfig(
-                    temperature=0.1,
-                    response_mime_type="application/json",
-                ),
-                safety_settings={
-                    HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
-                    HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
-                    HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
-                    HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
-                }
-            )
-
-            raw_content = response.text
-            return _parse_fp_json(raw_content)
-
-        except Exception as e:
-            last_error = str(e)
-            logger.error(f"Request error on attempt {attempt}: {e}")
-            time.sleep(2 ** attempt)
-
-    raise RuntimeError(f"Gemini API failed after {Config.LLM_MAX_RETRIES} attempts. Last error: {last_error}")
 
 def _parse_fp_json(raw: str) -> dict:
-    """Parse and validate the JSON returned by the LLM."""
+    """Parse và validate JSON trả về từ LLM."""
     cleaned = raw.strip()
-    
+    # Xóa markdown code fences nếu có
     if cleaned.startswith("```"):
         lines = cleaned.splitlines()
-        if lines[-1].strip() == "```":
-            cleaned = "\n".join(lines[1:-1])
-        else:
-            cleaned = "\n".join(lines[1:])
+        cleaned = "\n".join(
+            lines[1:-1] if lines[-1].strip() == "```" else lines[1:]
+        )
 
     try:
         data = json.loads(cleaned)
@@ -112,8 +73,76 @@ def _parse_fp_json(raw: str) -> dict:
 
     return validated
 
+
+def call_gemini(chunk: str) -> dict:
+    """
+    Gửi 1 chunk text đến Gemini API và trả về FP classification.
+    Retry tối đa Config.GEMINI_MAX_RETRIES lần với exponential backoff.
+    """
+    if not Config.GEMINI_API_KEY:
+        raise ValueError("GEMINI_API_KEY is not set in environment variables.")
+
+    # Khởi tạo client mới (google.genai)
+    client = genai.Client(api_key=Config.GEMINI_API_KEY)
+
+    last_error = None
+
+    for attempt in range(1, Config.GEMINI_MAX_RETRIES + 1):
+        try:
+            logger.info(
+                f"Gemini API call attempt {attempt}/{Config.GEMINI_MAX_RETRIES} "
+                f"| model: {Config.GEMINI_MODEL}"
+            )
+
+            response = client.models.generate_content(
+                model=Config.GEMINI_MODEL,
+                contents=f"{SYSTEM_PROMPT}\n\n{chunk.strip()}",
+                config=types.GenerateContentConfig(
+                    temperature=0.1,
+                    max_output_tokens=256,
+                ),
+            )
+
+            raw_content = response.text.strip()
+            result = _parse_fp_json(raw_content)
+            logger.info(f"Gemini chunk {attempt} result: {result}")
+            return result
+
+        except Exception as e:
+            last_error = str(e)
+            error_str = str(e).lower()
+
+            # Rate limit → chờ lâu hơn
+            if "quota" in error_str or "rate" in error_str or "429" in error_str:
+                wait = 2 ** attempt
+                logger.warning(f"Rate limited. Waiting {wait}s...")
+                time.sleep(wait)
+                continue
+
+            # Server error → retry
+            if "500" in error_str or "503" in error_str or "unavailable" in error_str:
+                wait = 2 ** attempt
+                logger.warning(f"Server error. Waiting {wait}s...")
+                time.sleep(wait)
+                continue
+
+            # Lỗi parse JSON → không retry (model trả sai format)
+            if "invalid json" in error_str or "missing keys" in error_str:
+                logger.error(f"Parse error (no retry): {e}")
+                raise
+
+            # Các lỗi khác → retry
+            logger.error(f"Attempt {attempt} error: {e}")
+            time.sleep(2)
+
+    raise RuntimeError(
+        f"Gemini API failed after {Config.GEMINI_MAX_RETRIES} attempts. "
+        f"Last error: {last_error}"
+    )
+
+
 def aggregate_classifications(classifications: list[dict]) -> dict:
-    """Sum FP counts from multiple chunks."""
+    """Cộng dồn FP counts từ nhiều chunks."""
     totals = {"EI": 0, "EO": 0, "EQ": 0, "ILF": 0, "EIF": 0}
     for cls in classifications:
         for key in totals:

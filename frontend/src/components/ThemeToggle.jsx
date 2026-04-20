@@ -10,6 +10,7 @@ export default function ThemeToggle({ theme, onToggle }) {
       case "mint-pink": return { background: "linear-gradient(-225deg, #E3FDF5 0%, #FFE6FA 100%)" };
       case "rose-blue": return { background: "linear-gradient(to top, #f3e7e9 0%, #e3eeff 99%, #e3eeff 100%)" };
       case "peach": return { background: "linear-gradient(to top, #feada6 0%, #f5efef 100%)" };
+      case "7saccauvong": return { background: "radial-gradient(circle farthest-corner at center center, #FF0000 0%, #FFFF00 25%, #05C1FF 50%, #FFFF00 75%, #FF0000 100%)" };
       default: return { background: "#f8eedf" };
     }
   };
@@ -21,7 +22,8 @@ export default function ThemeToggle({ theme, onToggle }) {
       "dark": "Dark",
       "mint-pink": "Mint",
       "rose-blue": "Rose",
-      "peach": "Peach"
+      "peach": "Peach",
+      "7saccauvong": "7Saccauvong"
     };
     return names[theme] || "Light";
   };

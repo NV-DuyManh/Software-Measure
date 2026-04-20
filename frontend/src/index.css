@@ -92,6 +92,16 @@
   --text-muted: #6b7280;
 }
 
+/* Theme 6: 7 sắc cầu vòng */
+[data-theme="7saccauvong"] {
+  --bg: radial-gradient(circle farthest-corner at center center, #FF0000 0%, #FFFF00 25%, #05C1FF 50%, #FFFF00 75%, #FF0000 100%);
+  --surface: rgba(255, 255, 255, 0.75);
+  --surface2: rgba(255, 255, 255, 0.5);
+  --border: rgba(255, 255, 255, 0.6);
+  --border-bright: #ffffff;
+  --text: #111827;
+  --text-muted: #6b7280;
+}
 /* ─── BASE ───────────────────────────────────────────────────────── */
 html { scroll-behavior: smooth; }
 

@@ -1,26 +1,36 @@
+# backend/routes/api.py
 import logging
 from flask import Blueprint, request, jsonify
-from services.nlp_service import process_document
-from services.gemini_service import call_llm, aggregate_classifications
-from services.fp_calculator import calculate_fp, recalculate
+from services.nlp_service        import process_document
+from services.gemini_service     import call_gemini, aggregate_classifications
+from services.fp_calculator      import calculate_fp, recalculate
 from config import Config
 
 logger = logging.getLogger(__name__)
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
+
 def _allowed_file(filename: str) -> bool:
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in Config.ALLOWED_EXTENSIONS
+    return (
+        "." in filename
+        and filename.rsplit(".", 1)[1].lower() in Config.ALLOWED_EXTENSIONS
+    )
+
 
 @api_bp.route("/health", methods=["GET"])
 def health():
-    return jsonify({"status": "ok", "model": Config.GEMINI_MODEL}), 200
+    return jsonify({
+        "status": "ok",
+        "model":  Config.GEMINI_MODEL,
+    }), 200
+
 
 @api_bp.route("/analyze", methods=["POST"])
 def analyze():
     """
     POST /api/analyze
-    Multipart form: file=<PDF or DOCX>
-    Returns: FP analysis JSON
+    Multipart form: file=<PDF hoặc DOCX>
+    Trả về: JSON kết quả FP
     """
     if "file" not in request.files:
         return jsonify({"error": "No file part in request."}), 400
@@ -30,42 +40,44 @@ def analyze():
         return jsonify({"error": "No file selected."}), 400
 
     if not _allowed_file(file.filename):
-        return jsonify({"error": f"Unsupported file type. Allowed: {Config.ALLOWED_EXTENSIONS}"}), 400
+        return jsonify({
+            "error": f"Unsupported file type. Allowed: {Config.ALLOWED_EXTENSIONS}"
+        }), 400
 
     try:
         file_bytes = file.read()
-        filename = file.filename
+        filename   = file.filename
 
-        logger.info(f"Processing file: {filename} ({len(file_bytes)} bytes)")
+        logger.info(f"Processing: {filename} ({len(file_bytes)} bytes)")
 
-        # Step 1: NLP pipeline
+        # Bước 1: NLP pipeline (extract → clean → chunk)
         chunks = process_document(file_bytes, filename)
-        logger.info(f"Extracted {len(chunks)} chunk(s) from document.")
+        logger.info(f"Extracted {len(chunks)} chunk(s).")
 
-        # Step 2: LLM classification per chunk
+        # Bước 2: Gửi từng chunk sang Gemini để classify
         classifications = []
-        errors = []
+        errors          = []
         for i, chunk in enumerate(chunks):
             try:
-                result = call_llm(chunk)
+                result = call_gemini(chunk)
                 classifications.append(result)
-                logger.info(f"Chunk {i+1}/{len(chunks)} classified: {result}")
+                logger.info(f"Chunk {i+1}/{len(chunks)}: {result}")
             except Exception as e:
                 logger.error(f"Chunk {i+1} failed: {e}")
                 errors.append(str(e))
 
         if not classifications:
             return jsonify({
-                "error": "AI classification failed for all chunks.",
+                "error":   "AI classification failed for all chunks.",
                 "details": errors,
             }), 502
 
-        # Step 3: Aggregate and calculate FP
+        # Bước 3: Tổng hợp và tính FP
         aggregated = aggregate_classifications(classifications)
-        result = calculate_fp(aggregated)
+        result     = calculate_fp(aggregated)
         result["chunks_processed"] = len(classifications)
-        result["chunks_failed"] = len(errors)
-        result["filename"] = filename
+        result["chunks_failed"]    = len(errors)
+        result["filename"]         = filename
 
         return jsonify(result), 200
 
@@ -77,12 +89,13 @@ def analyze():
         logger.exception("Unexpected error during analysis.")
         return jsonify({"error": "Internal server error.", "details": str(e)}), 500
 
+
 @api_bp.route("/recalculate", methods=["POST"])
 def recalculate_fp():
     """
     POST /api/recalculate
-    JSON body: { "EI": int, "EO": int, "EQ": int, "ILF": int, "EIF": int }
-    Returns: updated FP metrics
+    Body JSON: { "EI": int, "EO": int, "EQ": int, "ILF": int, "EIF": int }
+    Trả về: metrics đã tính lại
     """
     data = request.get_json(silent=True)
     if not data:

@@ -1,7 +1,7 @@
 // frontend/src/hooks/useTheme.js
 import { useState, useEffect } from "react";
 
-const THEMES = ["light", "dark", "mint-pink", "rose-blue", "peach"];
+const THEMES = ["light", "dark", "mint-pink", "rose-blue", "peach", "7saccauvong"];
 
 export function useTheme() {
   const [theme, setTheme] = useState(
