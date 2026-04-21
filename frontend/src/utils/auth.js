@@ -1,16 +1,16 @@
 // frontend/src/utils/auth.js
-// Auth helpers — token storage and API calls for register/login.
+// Token storage + API calls for register / login / history.
 
 const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
-// ─── Token storage ────────────────────────────────────────────────
+// ── Token & user storage ──────────────────────────────────────────
 
 export function saveToken(token) {
   localStorage.setItem("fp_jwt", token);
 }
 
 export function getToken() {
-  return localStorage.getItem("fp_jwt");
+  return localStorage.getItem("fp_jwt") || null;
 }
 
 export function removeToken() {
@@ -24,7 +24,8 @@ export function saveUser(user) {
 
 export function getUser() {
   try {
-    return JSON.parse(localStorage.getItem("fp_user"));
+    const raw = localStorage.getItem("fp_user");
+    return raw ? JSON.parse(raw) : null;
   } catch {
     return null;
   }
@@ -34,7 +35,7 @@ export function isLoggedIn() {
   return !!getToken();
 }
 
-// ─── API calls ────────────────────────────────────────────────────
+// ── Auth API calls ────────────────────────────────────────────────
 
 export async function apiRegister({ username, email, password }) {
   const res = await fetch(`${BASE}/api/auth/register`, {
@@ -58,12 +59,21 @@ export async function apiLogin({ username, password }) {
   return data;
 }
 
+// ── History API call ──────────────────────────────────────────────
+
 export async function apiGetHistory() {
   const token = getToken();
+  if (!token) throw new Error("Not logged in.");
+
   const res = await fetch(`${BASE}/api/history`, {
-    headers: { Authorization: `Bearer ${token}` },
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || "Failed to fetch history");
-  return data.history;
+  // backend returns { history: [...] }
+  return data.history ?? [];
 }

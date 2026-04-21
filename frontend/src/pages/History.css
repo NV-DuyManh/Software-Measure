@@ -1,28 +1,32 @@
 /* frontend/src/pages/History.css */
 
-.history-wrap {
+/* ── Page wrapper ───────────────────────────────────────────────── */
+.history-page {
   width: 100%;
-  max-width: 1200px;
+  max-width: 900px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 2rem 1rem 4rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  animation: fadeIn 0.3s ease;
+  gap: 1.75rem;
+  animation: hFadeIn 0.35s ease;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
+@keyframes hFadeIn {
+  from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: none; }
 }
 
+/* ── Top bar ────────────────────────────────────────────────────── */
 .history-topbar {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   flex-wrap: wrap;
   gap: 1rem;
 }
+
+.history-topbar-left { display: flex; flex-direction: column; gap: 0.3rem; }
 
 .history-title {
   font-size: 1.5rem;
@@ -32,103 +36,268 @@
 }
 
 .history-sub {
-  font-size: 0.875rem;
+  font-size: 0.9rem;
   color: var(--text-muted);
-  margin: 0.2rem 0 0;
+  margin: 0;
 }
 
-.history-status {
-  color: var(--text-muted);
-  font-size: 0.95rem;
-  padding: 1rem 0;
-}
-.history-status.error { color: var(--accent3); }
-
-.history-empty {
-  text-align: center;
-  padding: 3rem 0;
-  color: var(--text-muted);
+.history-username {
+  color: var(--accent);
 }
 
-/* Table */
-.history-table-wrap {
-  overflow-x: auto;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-}
-
-.history-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.875rem;
-  background: var(--surface);
-}
-
-.history-table th {
-  background: var(--surface2);
-  color: var(--text-muted);
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: 0.65rem 0.9rem;
-  text-align: left;
-  border-bottom: 1px solid var(--border);
-  white-space: nowrap;
-}
-
-.history-table td {
-  padding: 0.65rem 0.9rem;
-  border-bottom: 1px solid var(--border);
-  color: var(--text);
-  vertical-align: middle;
-}
-
-.history-table tr:last-child td { border-bottom: none; }
-.history-table tr:hover td { background: var(--surface2); }
-
-.mono  { font-family: var(--font-mono); font-size: 0.8rem; }
-
-/* Component colours */
-.mono.ei  { color: var(--EI); }
-.mono.eo  { color: var(--EO); }
-.mono.eq  { color: var(--EQ); }
-.mono.ilf { color: var(--ILF); }
-.mono.eif { color: var(--EIF); }
-.mono.accent { color: var(--accent); font-weight: 700; }
-
-.unit {
-  font-size: 0.65rem;
+.history-count {
   color: var(--text-dim);
-  margin-left: 2px;
+  font-weight: 400;
 }
 
-.file-cell {
-  max-width: 160px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 0.8rem;
-}
-
-.date-cell {
-  white-space: nowrap;
-  color: var(--text-muted);
-  font-size: 0.8rem;
-}
-
-/* Reuse btn-ghost from Dashboard.css — define fallback here */
+/* ── btn-ghost (fallback if Dashboard.css not in scope) ─────────── */
 .btn-ghost {
   background: var(--surface);
   border: 1px solid var(--border);
   color: var(--text-muted);
-  box-shadow: var(--shadow);
   border-radius: var(--radius-sm);
   padding: 0.5rem 1rem;
   cursor: pointer;
   font-size: 0.9rem;
+  font-family: var(--font-display);
+  transition: border-color 0.15s, color 0.15s;
 }
-.btn-ghost:hover {
-  border-color: var(--accent);
-  color: var(--accent);
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: var(--font-display);
+}
+.btn-primary:hover { opacity: 0.88; }
+
+/* ── Centered states ────────────────────────────────────────────── */
+.history-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 280px;
+}
+
+/* Loading spinner */
+.h-spinner {
+  width: 36px; height: 36px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: hSpin 0.7s linear infinite;
+  margin-bottom: 1rem;
+}
+@keyframes hSpin { to { transform: rotate(360deg); } }
+
+.history-loading-text {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+}
+
+/* Error box */
+.h-error-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  max-width: 360px;
+}
+.h-error-icon { font-size: 2.5rem; }
+.h-error-msg  { color: var(--accent3); font-size: 0.9rem; }
+
+/* Empty state */
+.h-empty {
+  background: var(--surface);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 3rem 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: 360px;
+}
+.h-empty-icon  { font-size: 3rem; }
+.h-empty-title { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+.h-empty-sub   { font-size: 0.875rem; color: var(--text-muted); }
+
+/* ── Card list ──────────────────────────────────────────────────── */
+.h-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ── Single card ────────────────────────────────────────────────── */
+.h-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+.h-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-bright);
+}
+
+/* Card header */
+.h-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.h-card-left {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.h-card-index {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.1rem 0.4rem;
+  flex-shrink: 0;
+}
+
+.h-card-icon { font-size: 1.1rem; flex-shrink: 0; }
+
+.h-card-filename {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 420px;
+}
+
+.h-card-date {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Component badges row ───────────────────────────────────────── */
+.h-card-comps {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.comp-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.35rem 0.75rem;
+  min-width: 52px;
+}
+
+.comp-badge-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.comp-badge-value {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* ── KPI row ────────────────────────────────────────────────────── */
+.h-card-kpis {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.75rem;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1rem;
+}
+
+@media (max-width: 600px) {
+  .h-card-kpis { grid-template-columns: repeat(2, 1fr); }
+}
+
+.h-kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.h-kpi-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.h-kpi-value {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.h-kpi-value small {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  font-weight: 400;
+}
+
+.h-kpi-value.fp   { color: var(--accent); font-size: 1.05rem; }
+.h-kpi-value.cost { color: var(--accent2); }
+
+/* ── Card footer ────────────────────────────────────────────────── */
+.h-card-footer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 0.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.h-chunk-ok {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--accent2);
+}
+
+.h-chunk-fail {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--accent3);
 }

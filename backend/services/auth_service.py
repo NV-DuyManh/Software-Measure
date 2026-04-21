@@ -1,6 +1,6 @@
 """
 backend/services/auth_service.py
-Handles password hashing and JWT creation / verification.
+Password hashing (bcrypt) + JWT sign / verify.
 """
 import logging
 import datetime
@@ -11,46 +11,46 @@ from config import Config
 logger = logging.getLogger(__name__)
 
 
-# ─── Password helpers ─────────────────────────────────────────────
+# ── Password ──────────────────────────────────────────────────────
 
 def hash_password(plain: str) -> str:
-    """Return a bcrypt hash of the plaintext password."""
+    """Return bcrypt hash of plaintext password."""
     salt = bcrypt.gensalt()
-    return bcrypt.hashpw(plain.encode(), salt).decode()
+    return bcrypt.hashpw(plain.encode("utf-8"), salt).decode("utf-8")
 
 
 def verify_password(plain: str, hashed: str) -> bool:
-    """Return True if plain matches the stored hash."""
+    """Return True if plain matches stored bcrypt hash."""
     try:
-        return bcrypt.checkpw(plain.encode(), hashed.encode())
+        return bcrypt.checkpw(plain.encode("utf-8"), hashed.encode("utf-8"))
     except Exception as e:
-        logger.warning(f"Password verify error: {e}")
+        logger.warning(f"verify_password error: {e}")
         return False
 
 
-# ─── JWT helpers ──────────────────────────────────────────────────
+# ── JWT ───────────────────────────────────────────────────────────
 
 def create_token(user_id: int, username: str) -> str:
     """Create a signed JWT valid for 7 days."""
     payload = {
-        "sub": user_id,
+        "sub":      user_id,
         "username": username,
-        "exp": datetime.datetime.utcnow() + datetime.timedelta(days=7),
-        "iat": datetime.datetime.utcnow(),
+        "exp":      datetime.datetime.utcnow() + datetime.timedelta(days=7),
+        "iat":      datetime.datetime.utcnow(),
     }
     return jwt.encode(payload, Config.JWT_SECRET, algorithm="HS256")
 
 
 def decode_token(token: str) -> dict | None:
     """
-    Decode and verify a JWT.
-    Returns the payload dict on success, None on failure.
+    Verify and decode a JWT.
+    Returns payload dict on success, None on any failure.
     """
     try:
         return jwt.decode(token, Config.JWT_SECRET, algorithms=["HS256"])
     except jwt.ExpiredSignatureError:
-        logger.info("Token expired.")
+        logger.info("JWT expired.")
         return None
     except jwt.InvalidTokenError as e:
-        logger.info(f"Invalid token: {e}")
+        logger.info(f"Invalid JWT: {e}")
         return None
