@@ -3,7 +3,7 @@ import sys
 from flask import Flask
 from flask_cors import CORS
 from config import Config
-from routes import api_bp
+from routes import api_bp, auth_bp, history_bp
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -23,6 +23,8 @@ def create_app() -> Flask:
     CORS(app, resources={r"/api/*": {"origins": "*"}})
 
     app.register_blueprint(api_bp)
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(history_bp)
 
     @app.errorhandler(413)
     def request_entity_too_large(e):

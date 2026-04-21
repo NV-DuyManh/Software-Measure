@@ -43,3 +43,4 @@ logs/
 # ── Uploads (temp files) ─────────────────────────
 uploads/
 tmp/
+.env

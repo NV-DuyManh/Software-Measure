@@ -30,3 +30,12 @@ class Config:
 
     PORT = int(os.getenv("PORT", 5000))
     DEBUG = os.getenv("DEBUG", "false").lower() == "true"
+    
+    # ── Database ──────────────────────────────────────
+    DB_HOST     = os.getenv("DB_HOST", "localhost")
+    DB_USER     = os.getenv("DB_USER", "root")
+    DB_PASSWORD = os.getenv("DB_PASSWORD", "Duymanh20092005#")
+    DB_NAME     = os.getenv("DB_NAME", "SM")
+
+    # ── JWT ───────────────────────────────────────────
+    JWT_SECRET  = os.getenv("JWT_SECRET", "supersecretkey")

@@ -67,8 +67,22 @@ def analyze():
         result["chunks_failed"] = len(errors)
         result["filename"] = filename
 
-        return jsonify(result), 200
+        # ── Lưu history nếu user đã đăng nhập ──────────────────
+        try:
+            from services.auth_service import decode_token
+            from services.db_service import save_fp_history
+            auth_header = request.headers.get("Authorization", "")
+            if auth_header.startswith("Bearer "):
+                token = auth_header[len("Bearer "):]
+                payload = decode_token(token)
+                if payload:
+                    save_fp_history(payload.get("sub"), result)
+                    logger.info(f"FP history saved for user_id={payload.get('sub')}")
+        except Exception as _hist_err:
+            logger.warning(f"Could not save FP history: {_hist_err}")
+        # ────────────────────────────────────────────────────────
 
+        return jsonify(result), 200
     except ValueError as e:
         return jsonify({"error": str(e)}), 422
     except RuntimeError as e:

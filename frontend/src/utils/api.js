@@ -1,9 +1,11 @@
 const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
-export async function analyzeDocument(file) {
+export async function analyzeDocument(file, token = null) {
   const form = new FormData();
   form.append("file", file);
-  const res = await fetch(`${BASE}/api/analyze`, { method: "POST", body: form });
+  const headers = {};
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+  const res = await fetch(`${BASE}/api/analyze`, { method: "POST", body: form, headers });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || "Analysis failed");
   return data;

@@ -3,6 +3,10 @@ import UploadZone from "./components/UploadZone";
 import Dashboard from "./components/Dashboard";
 import Header from "./components/Header";
 import { analyzeDocument } from "./utils/api";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import History from "./pages/History";
+import { getUser, getToken, removeToken } from "./utils/auth";
 import "./App.css";
 
 export default function App() {
@@ -10,6 +14,8 @@ export default function App() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [progress, setProgress] = useState("");
+  const [authPage, setAuthPage] = useState(null);
+  const [currentUser, setCurrentUser] = useState(getUser);
 
   const steps = [
     "Extracting text from document…",
@@ -32,7 +38,8 @@ export default function App() {
     }, 1800);
 
     try {
-      const data = await analyzeDocument(file);
+      const token = getToken();
+      const data = await analyzeDocument(file, token);
       clearInterval(ticker);
       setResult(data);
       setState("done");
@@ -48,10 +55,49 @@ export default function App() {
     setResult(null);
     setError(null);
   }
-
+  if (authPage === "login") {
+    return (
+      <div className="app">
+        <Login
+          onSuccess={(user) => { setCurrentUser(user); setAuthPage(null); }}
+          onGoRegister={() => setAuthPage("register")}
+        />
+      </div>
+    );
+  }
+  if (authPage === "register") {
+    return (
+      <div className="app">
+        <Register
+          onSuccess={(user) => { setCurrentUser(user); setAuthPage(null); }}
+          onGoLogin={() => setAuthPage("login")}
+        />
+      </div>
+    );
+  }
+  if (authPage === "history") {
+    return (
+      <div className="app">
+        <Header
+          user={currentUser}
+          onLogin={() => setAuthPage("login")}
+          onLogout={() => { removeToken(); setCurrentUser(null); setAuthPage(null); }}
+          onHistory={() => setAuthPage("history")}
+        />
+        <main className="main">
+          <History user={currentUser} onBack={() => setAuthPage(null)} />
+        </main>
+      </div>
+    );
+  }
   return (
     <div className="app">
-      <Header />
+      <Header
+        user={currentUser}
+        onLogin={() => setAuthPage("login")}
+        onLogout={() => { removeToken(); setCurrentUser(null); }}
+        onHistory={() => setAuthPage("history")}
+      />
       <main className="main">
         {state === "idle" && <UploadZone onFile={handleFile} />}
         {state === "loading" && (

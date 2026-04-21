@@ -1,0 +1,163 @@
+========================================================
+FRONTEND PATCH 1 — frontend/src/App.jsx
+Add auth state, page routing, and token injection into
+analyzeDocument. DO NOT change any existing state or logic.
+========================================================
+
+FIND the top import block (first 5 lines):
+    import { useState } from "react";
+    import UploadZone from "./components/UploadZone";
+    import Dashboard from "./components/Dashboard";
+    import Header from "./components/Header";
+    import { analyzeDocument } from "./utils/api";
+    import "./App.css";
+
+REPLACE WITH (ADD new imports only at bottom of import block):
+    import { useState } from "react";
+    import UploadZone from "./components/UploadZone";
+    import Dashboard from "./components/Dashboard";
+    import Header from "./components/Header";
+    import { analyzeDocument } from "./utils/api";
+    import Login from "./pages/Login";
+    import Register from "./pages/Register";
+    import History from "./pages/History";
+    import { getUser, getToken, removeToken } from "./utils/auth";
+    import "./App.css";
+
+----
+
+FIND this line at the top of the App() function:
+    const [progress, setProgress] = useState("");
+
+ADD these lines RIGHT AFTER it (4 new state declarations):
+    // ── Auth state ──────────────────────────────────────────────
+    const [authPage, setAuthPage] = useState(null); // null | "login" | "register" | "history"
+    const [currentUser, setCurrentUser] = useState(getUser);
+
+----
+
+FIND the handleFile function signature:
+    async function handleFile(file) {
+
+Inside handleFile, FIND:
+      const data = await analyzeDocument(file);
+
+REPLACE WITH (pass JWT header):
+      const token = getToken();
+      const data = await analyzeDocument(file, token);
+
+----
+
+FIND the return block's opening:
+    return (
+      <div className="app">
+        <Header />
+
+REPLACE WITH:
+    // ── Auth page routing ────────────────────────────────────────
+    if (authPage === "login") {
+      return (
+        <div className="app">
+          <Login
+            onSuccess={(user) => { setCurrentUser(user); setAuthPage(null); }}
+            onGoRegister={() => setAuthPage("register")}
+          />
+        </div>
+      );
+    }
+    if (authPage === "register") {
+      return (
+        <div className="app">
+          <Register
+            onSuccess={(user) => { setCurrentUser(user); setAuthPage(null); }}
+            onGoLogin={() => setAuthPage("login")}
+          />
+        </div>
+      );
+    }
+    if (authPage === "history") {
+      return (
+        <div className="app">
+          <Header
+            user={currentUser}
+            onLogin={() => setAuthPage("login")}
+            onLogout={() => { removeToken(); setCurrentUser(null); setAuthPage(null); }}
+            onHistory={() => setAuthPage("history")}
+          />
+          <main className="main">
+            <History user={currentUser} onBack={() => setAuthPage(null)} />
+          </main>
+        </div>
+      );
+    }
+
+    return (
+      <div className="app">
+        <Header
+          user={currentUser}
+          onLogin={() => setAuthPage("login")}
+          onLogout={() => { removeToken(); setCurrentUser(null); }}
+          onHistory={() => setAuthPage("history")}
+        />
+
+
+========================================================
+FRONTEND PATCH 2 — frontend/src/utils/api.js
+Inject Authorization header into analyzeDocument.
+DO NOT change recalculate().
+========================================================
+
+FIND:
+    export async function analyzeDocument(file) {
+      const form = new FormData();
+      form.append("file", file);
+      const res = await fetch(`${BASE}/api/analyze`, { method: "POST", body: form });
+
+REPLACE WITH:
+    export async function analyzeDocument(file, token = null) {
+      const form = new FormData();
+      form.append("file", file);
+      const headers = {};
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+      const res = await fetch(`${BASE}/api/analyze`, { method: "POST", body: form, headers });
+
+
+========================================================
+FRONTEND PATCH 3 — frontend/src/components/Header.jsx
+Add user pill + logout + history button props.
+DO NOT change existing logo or ThemeToggle logic.
+========================================================
+
+FIND the Header function signature:
+    export default function Header() {
+      const { theme, cycleTheme } = useTheme();
+
+REPLACE WITH:
+    export default function Header({ user, onLogin, onLogout, onHistory }) {
+      const { theme, cycleTheme } = useTheme();
+
+----
+
+FIND the closing of .header-meta (the div containing badges + ThemeToggle):
+          <ThemeToggle theme={theme} onToggle={cycleTheme} />
+        </div>
+
+REPLACE WITH:
+          <ThemeToggle theme={theme} onToggle={cycleTheme} />
+
+          {/* ── Auth controls ─────────────────────────── */}
+          {user ? (
+            <>
+              <button className="badge" style={{ cursor: "pointer" }} onClick={onHistory} title="View history">
+                📋 {user.username}
+              </button>
+              <button className="badge" style={{ cursor: "pointer" }} onClick={onLogout}>
+                Sign Out
+              </button>
+            </>
+          ) : (
+            <button className="badge" style={{ cursor: "pointer" }} onClick={onLogin}>
+              Sign In
+            </button>
+          )}
+        </div>
