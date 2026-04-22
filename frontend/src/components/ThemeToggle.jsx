@@ -2,53 +2,38 @@
 import "./ThemeToggle.css";
 
 export default function ThemeToggle({ theme, onToggle }) {
-  const isDark = theme === "dark";
+  const getSwatchStyle = () => {
+    switch (theme) {
+      case "light": return { background: "#f8eedf", border: "1px solid #d1d5db" };
+      case "dark": return { background: "#080c10", border: "1px solid #3a5a76" };
+      case "mint-pink": return { background: "linear-gradient(-225deg, #E3FDF5 0%, #FFE6FA 100%)" };
+      case "rose-blue": return { background: "linear-gradient(to top, #f3e7e9 0%, #e3eeff 99%, #e3eeff 100%)" };
+      case "peach": return { background: "linear-gradient(to top, #feada6 0%, #f5efef 100%)" };
+      case "rainbow": return { background: "radial-gradient(circle farthest-corner at center center, #FF0000 0%, #FFFF00 25%, #05C1FF 50%, #FFFF00 75%, #FF0000 100%)" };
+      default: return { background: "#f8eedf" };
+    }
+  };
+
+  const getThemeName = () => {
+    const names = {
+      "light": "Light",
+      "dark": "Dark",
+      "mint-pink": "Mint",
+      "rose-blue": "Rose",
+      "peach": "Peach",
+      "rainbow": "Rainbow"
+    };
+    return names[theme] || "Light";
+  };
 
   return (
     <button
-      className="theme-toggle"
+      className="theme-cycle-btn"
       onClick={onToggle}
-      title={isDark ? "Switch to light mode" : "Switch to dark mode"}
-      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      title={`Switch theme (Current: ${getThemeName()})`}
     >
-      {/* Sun icon */}
-      <svg
-        className={`toggle-icon icon-sun ${isDark ? "icon-hide" : "icon-show"}`}
-        viewBox="0 0 16 16"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <circle cx="8" cy="8" r="3" stroke="currentColor" strokeWidth="1.5"/>
-        <path
-          d="M8 1v1.5M8 13.5V15M1 8h1.5M13.5 8H15
-             M3.05 3.05l1.06 1.06M11.89 11.89l1.06 1.06
-             M11.89 4.11l-1.06 1.06M4.11 11.89 3.05 12.95"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-        />
-      </svg>
-
-      {/* Track */}
-      <div className={`toggle-track ${isDark ? "on" : ""}`}>
-        <div className="toggle-knob" />
-      </div>
-
-      {/* Moon icon */}
-      <svg
-        className={`toggle-icon icon-moon ${isDark ? "icon-show" : "icon-hide"}`}
-        viewBox="0 0 16 16"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M13.5 9.5A5.5 5.5 0 0 1 6.5 2.5a5.5 5.5 0 1 0 7 7z"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
+      <div className="theme-swatch" style={getSwatchStyle()} />
+      <span className="theme-name">{getThemeName()}</span>
     </button>
   );
 }

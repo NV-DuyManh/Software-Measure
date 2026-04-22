@@ -71,9 +71,51 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════
+   GRADIENT THEMES (Hiệu ứng kính mờ - Glassmorphism)
+═══════════════════════════════════════════════════════════════════ */
+
+[data-theme="mint-pink"] {
+  --bg: linear-gradient(-225deg, #E3FDF5 0%, #FFE6FA 100%);
+  --surface: rgba(255, 255, 255, 0.75);
+  --surface2: rgba(255, 255, 255, 0.5);
+  --border: rgba(255, 255, 255, 0.6);
+  --border-bright: #ffffff;
+  --text: #111827;
+  --text-muted: #6b7280;
+}
+
+[data-theme="rose-blue"] {
+  --bg: linear-gradient(to top, #f3e7e9 0%, #e3eeff 99%, #e3eeff 100%);
+  --surface: rgba(255, 255, 255, 0.75);
+  --surface2: rgba(255, 255, 255, 0.5);
+  --border: rgba(255, 255, 255, 0.6);
+  --border-bright: #ffffff;
+  --text: #111827;
+  --text-muted: #6b7280;
+}
+
+[data-theme="peach"] {
+  --bg: linear-gradient(to top, #feada6 0%, #f5efef 100%);
+  --surface: rgba(255, 255, 255, 0.75);
+  --surface2: rgba(255, 255, 255, 0.5);
+  --border: rgba(255, 255, 255, 0.6);
+  --border-bright: #ffffff;
+  --text: #111827;
+  --text-muted: #6b7280;
+}
+
+[data-theme="rainbow"] {
+  --bg: radial-gradient(circle farthest-corner at center center, #FF0000 0%, #FFFF00 25%, #05C1FF 50%, #FFFF00 75%, #FF0000 100%);
+  --surface: rgba(255, 255, 255, 0.85); /* Tăng độ mờ nền để chữ dễ đọc hơn trên nền chói */
+  --surface2: rgba(255, 255, 255, 0.65);
+  --border: rgba(255, 255, 255, 0.7);
+  --border-bright: #ffffff;
+  --text: #111827;
+  --text-muted: #374151; /* Làm đậm màu chữ phụ một chút */
+}
+
+/* ═══════════════════════════════════════════════════════════════════
    GLOBAL TRANSITION — smooth khi chuyển theme
-   (chỉ transition color/background, KHÔNG transition transform
-    để tránh làm chậm animation khác)
 ═══════════════════════════════════════════════════════════════════ */
 html {
   scroll-behavior: smooth;

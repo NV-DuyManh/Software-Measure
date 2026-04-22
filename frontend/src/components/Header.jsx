@@ -5,7 +5,7 @@ import { useAuth }    from "../context/AuthContext";
 import "./Header.css";
 
 export default function Header({ onLoginClick }) {
-  const { theme, toggle } = useTheme();
+  const { theme, cycleTheme } = useTheme(); // <-- Sửa toggle thành cycleTheme
   const { user, logout }  = useAuth();
 
   return (
@@ -24,10 +24,10 @@ export default function Header({ onLoginClick }) {
           <span className="badge">Groq · llama3-70b</span>
           <span className="badge badge-green">IFPUG Standard</span>
 
-          {/* Theme toggle — gọi useTheme ngay tại đây */}
-          <ThemeToggle theme={theme} onToggle={toggle} />
+          {/* Theme toggle: truyền hàm cycleTheme vào */}
+          <ThemeToggle theme={theme} onToggle={cycleTheme} />
 
-          {/* Auth */}
+          {/* Auth (Giữ nguyên code Claude) */}
           {user ? (
             <div className="user-area">
               <span className="user-name">{user.username}</span>

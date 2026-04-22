@@ -1,76 +1,36 @@
 /* frontend/src/components/ThemeToggle.css */
 
-.theme-toggle {
+.theme-cycle-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  background: var(--surface2);
+  gap: 8px;
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 20px;
-  padding: 5px 10px;
+  padding: 4px 12px 4px 6px;
   cursor: pointer;
   color: var(--text-muted);
-  transition: border-color 0.2s, color 0.2s, background 0.2s;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  transition: border-color 0.2s, color 0.2s, box-shadow 0.2s;
 }
 
-.theme-toggle:hover {
+.theme-cycle-btn:hover {
   border-color: var(--accent);
-  color: var(--accent);
+  color: var(--text);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* ── Icons ────────────────────────────────────────────────────────── */
-.toggle-icon {
-  width: 14px;
-  height: 14px;
-  flex-shrink: 0;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-.icon-show {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.icon-hide {
-  opacity: 0.35;
-  transform: scale(0.85);
-}
-
-/* ── Track ────────────────────────────────────────────────────────── */
-.toggle-track {
-  width: 32px;
+.theme-swatch {
+  width: 18px;
   height: 18px;
-  border-radius: 9px;
-  background: var(--border);
-  border: 1px solid var(--border-bright);
-  position: relative;
-  flex-shrink: 0;
-  transition: background 0.25s ease, border-color 0.25s ease;
-}
-
-.toggle-track.on {
-  background: var(--accent);
-  border-color: var(--accent);
-}
-
-/* ── Knob ─────────────────────────────────────────────────────────── */
-.toggle-knob {
-  width: 12px;
-  height: 12px;
   border-radius: 50%;
-  background: #ffffff;
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
-  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.15);
 }
 
-.toggle-track.on .toggle-knob {
-  transform: translateX(14px);
-}
-
-/* Dark mode: knob màu tối hơn */
-[data-theme="dark"] .toggle-knob {
-  background: var(--bg);
+.theme-name {
+  min-width: 55px; /* Để text không nhảy khi đổi tên từ Rose sang Rainbow */
+  text-align: left;
 }
