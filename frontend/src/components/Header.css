@@ -8,6 +8,8 @@
   position: sticky;
   top: 0;
   z-index: 100;
+  /* Smooth khi chuyển theme */
+  transition: background 0.25s ease, border-color 0.25s ease;
 }
 
 .header-inner {
@@ -16,11 +18,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.1rem 0;
+  padding: 1rem 0;
   gap: 1rem;
 }
 
-/* Logo */
+/* ── Logo ─────────────────────────────────────────────────────────── */
 .logo {
   font-family: var(--font-display);
   font-size: 1.4rem;
@@ -36,15 +38,15 @@
 .logo-text    { color: var(--text); }
 .logo-accent  { color: var(--accent); }
 
-/* Right side */
+/* ── Right side ───────────────────────────────────────────────────── */
 .header-meta {
   display: flex;
-  gap: 0.5rem;
   align-items: center;
+  gap: 0.5rem;
   flex-wrap: wrap;
 }
 
-/* Badges */
+/* ── Badges ───────────────────────────────────────────────────────── */
 .badge {
   font-family: var(--font-mono);
   font-size: 0.72rem;
@@ -54,6 +56,7 @@
   border: 1px solid var(--border);
   color: var(--text-muted);
   letter-spacing: 0.03em;
+  transition: background 0.25s, border-color 0.25s, color 0.25s;
 }
 
 .badge-green {
@@ -68,7 +71,7 @@
   color: #00ff88;
 }
 
-/* Header bottom line */
+/* ── Header bottom line (chỉ hiện ở dark mode) ───────────────────── */
 .header-line {
   display: none;
 }
@@ -76,10 +79,15 @@
 [data-theme="dark"] .header-line {
   display: block;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--border),
+    transparent
+  );
 }
 
-/* User area */
+/* ── User area ────────────────────────────────────────────────────── */
 .user-area {
   display: flex;
   align-items: center;
@@ -96,8 +104,35 @@
   white-space: nowrap;
 }
 
-/* Small button variant */
+/* ── Button variants ──────────────────────────────────────────────── */
 .btn-sm {
   padding: 5px 14px !important;
   font-size: 0.82rem !important;
 }
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.4rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+
+.btn-ghost {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }

@@ -1,32 +1,23 @@
 // frontend/src/hooks/useTheme.js
 import { useState, useEffect } from "react";
 
-const THEMES = ["light", "dark", "mint-pink", "rose-blue", "peach", "7saccauvong"];
-
 export function useTheme() {
-  const [theme, setTheme] = useState(
-    () => localStorage.getItem("fp-theme") || "light"
-  );
+  const [theme, setTheme] = useState(() => {
+    // Đọc theme đã lưu, mặc định là "light"
+    return localStorage.getItem("fp-theme") || "light";
+  });
 
   useEffect(() => {
     const root = document.documentElement;
-    // Xóa tất cả thuộc tính theme cũ
-    root.removeAttribute("data-theme");
-    
-    // Nếu không phải light (mặc định), thì thêm attribute mới
-    if (theme !== "light") {
-      root.setAttribute("data-theme", theme);
+    if (theme === "dark") {
+      root.setAttribute("data-theme", "dark");
+    } else {
+      root.removeAttribute("data-theme");
     }
     localStorage.setItem("fp-theme", theme);
   }, [theme]);
 
-  const cycleTheme = () => {
-    setTheme((prevTheme) => {
-      const currentIndex = THEMES.indexOf(prevTheme);
-      const nextIndex = (currentIndex + 1) % THEMES.length;
-      return THEMES[nextIndex];
-    });
-  };
+  const toggle = () => setTheme(t => (t === "light" ? "dark" : "light"));
 
-  return { theme, cycleTheme };
+  return { theme, toggle };
 }

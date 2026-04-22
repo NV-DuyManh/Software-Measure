@@ -10,40 +10,42 @@ import { analyzeDocument, getHistoryDetail } from "./utils/api";
 import { useAuth }   from "./context/AuthContext";
 import "./App.css";
 
+const STEPS = [
+  "Extracting text from document…",
+  "Cleaning and chunking content…",
+  "Sending to Gemini AI…",
+  "Classifying functional components…",
+  "Computing Function Points…",
+  "Saving to database…",
+];
+
 export default function App() {
   const { user } = useAuth();
 
   const [state,        setState]        = useState("idle");
   const [result,       setResult]       = useState(null);
   const [error,        setError]        = useState(null);
-  const [progress,     setProgress]     = useState("");
+  const [loadingStep,  setLoadingStep]  = useState("");
   const [showAuth,     setShowAuth]     = useState(false);
   const [activeUpload, setActiveUpload] = useState(null);
 
-  const steps = [
-    "Extracting text from document…",
-    "Cleaning and chunking content…",
-    "Sending to Groq LLM…",
-    "Classifying functional components…",
-    "Computing Function Points…",
-    "Saving to database…",
-  ];
-
-  // ── Upload file mới ──────────────────────────────────────────────
+  // ── Upload file mới ────────────────────────────────────────────
   async function handleFile(file) {
     if (!user) {
       setShowAuth(true);
       return;
     }
+
     setState("loading");
     setError(null);
     setResult(null);
 
     let stepIdx = 0;
-    setProgress(steps[0]);
+    setLoadingStep(STEPS[0]);
+
     const ticker = setInterval(() => {
-      stepIdx = Math.min(stepIdx + 1, steps.length - 1);
-      setProgress(steps[stepIdx]);
+      stepIdx = Math.min(stepIdx + 1, STEPS.length - 1);
+      setLoadingStep(STEPS[stepIdx]);
     }, 1600);
 
     try {
@@ -59,10 +61,11 @@ export default function App() {
     }
   }
 
-  // ── Chọn 1 item từ sidebar (load history) ───────────────────────
+  // ── Load từ history sidebar ─────────────────────────────────────
   async function handleSelectUpload(uploadId) {
     setState("loading");
-    setProgress("Loading analysis…");
+    setLoadingStep("Loading analysis…");
+
     try {
       const { result, vaf_factors } = await getHistoryDetail(uploadId);
       if (!result) throw new Error("No result found for this upload.");
@@ -101,12 +104,15 @@ export default function App() {
     setState("idle");
     setResult(null);
     setError(null);
+    setLoadingStep("");
     setActiveUpload(null);
   }
 
+  const isLoading = state === "loading";
+
   return (
     <div className="app-shell">
-      {/* Sidebar chỉ hiện khi đã đăng nhập */}
+      {/* Sidebar chỉ hiển thị khi đã đăng nhập */}
       {user && (
         <Sidebar
           onSelectUpload={handleSelectUpload}
@@ -118,25 +124,17 @@ export default function App() {
         <Header onLoginClick={() => setShowAuth(true)} />
 
         <main className="main">
-          {state === "idle" && (
-            <UploadZone onFile={handleFile} />
+
+          {/* ── IDLE & LOADING: cùng chung UploadZone ── */}
+          {(state === "idle" || state === "loading") && (
+            <UploadZone
+              onFile={handleFile}
+              isLoading={isLoading}
+              loadingStep={loadingStep}
+            />
           )}
 
-          {state === "loading" && (
-            <div className="loading-screen">
-              <div className="spinner-ring" />
-              <p className="loading-step">{progress}</p>
-              <div className="step-dots">
-                {steps.map((s, i) => (
-                  <span
-                    key={i}
-                    className={`dot ${steps.indexOf(progress) >= i ? "active" : ""}`}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-
+          {/* ── ERROR ── */}
           {state === "error" && (
             <div className="error-screen">
               <div className="error-icon">⚠</div>
@@ -148,6 +146,7 @@ export default function App() {
             </div>
           )}
 
+          {/* ── DONE ── */}
           {state === "done" && result && (
             <>
               <ExportButtons uploadId={activeUpload} />
@@ -159,6 +158,7 @@ export default function App() {
               />
             </>
           )}
+
         </main>
       </div>
 

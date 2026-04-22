@@ -1,9 +1,6 @@
-/* frontend/src/App.css
-   Thêm các rules này vào cuối file App.css hiện tại của bạn
-   (KHÔNG xóa phần cũ, chỉ paste thêm vào cuối)
-*/
+/* frontend/src/App.css */
 
-/* ── Shell layout: sidebar bên trái + nội dung chính bên phải ── */
+/* ── Shell: sidebar trái + nội dung phải ────────────────────────── */
 .app-shell {
   min-height: 100vh;
   display: flex;
@@ -12,19 +9,92 @@
 
 .app-main {
   flex: 1;
-  min-width: 0;           /* quan trọng: ngăn overflow */
+  min-width: 0;
   display: flex;
   flex-direction: column;
 }
 
-/* ── Spinner (nếu chưa có trong App.css cũ) ── */
-.spinner-ring {
-  width: 72px;
-  height: 72px;
-  border: 3px solid var(--border);
-  border-top-color:  var(--accent);
-  border-right-color: var(--accent2);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+/* ── Main content area ───────────────────────────────────────────── */
+/*    QUAN TRỌNG: align-items: center để mọi thứ căn giữa,
+      kể cả lúc loading                                         */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;        /* ← căn giữa ngang */
+  justify-content: center;    /* ← căn giữa dọc */
+  padding: 2rem 1.5rem;
+  width: 100%;
 }
-@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Error screen ────────────────────────────────────────────────── */
+.error-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  max-width: 480px;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.error-icon {
+  font-size: 3rem;
+  color: var(--accent3);
+}
+
+.error-screen h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.error-msg {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  width: 100%;
+  word-break: break-word;
+  text-align: left;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────── */
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  box-shadow: 0 2px 4px color-mix(in srgb, var(--accent) 35%, transparent);
+  transition: opacity 0.2s, transform 0.15s;
+}
+.btn-primary:hover   { opacity: 0.88; transform: translateY(-1px); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.btn-ghost {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 0.5rem 1.25rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: border-color 0.2s, color 0.2s;
+}
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }

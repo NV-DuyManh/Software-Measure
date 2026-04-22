@@ -1,6 +1,9 @@
+/* frontend/src/components/UploadZone.css */
+
+/* ── Wrapper ─────────────────────────────────────────────────────── */
 .upload-wrap {
   width: 100%;
-  max-width: 900px; /* FIX: Tăng độ rộng để chứa dropzone to hơn */
+  max-width: 900px;
   display: flex;
   flex-direction: column;
   gap: 2.5rem;
@@ -8,20 +11,27 @@
   margin: 0 auto;
 }
 
-.upload-hero { text-align: center; }
+/* ── Hero ────────────────────────────────────────────────────────── */
+.upload-hero {
+  text-align: center;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.upload-hero.hero-hidden {
+  display: none;
+}
 
 .upload-hero h1 {
-  /* FIX: Chỉnh lại size, xóa hiệu ứng stretch/bẹt của chữ */
-  font-size: clamp(2rem, 4vw, 3.2rem); 
+  font-size: clamp(2rem, 4vw, 3.2rem);
   font-weight: 800;
   line-height: 1.2;
-  letter-spacing: normal; 
+  letter-spacing: -0.02em;
   margin-bottom: 0.5rem;
+  color: var(--text);
 }
 
 .gradient-text {
-  /* FIX: Chữ Estimation màu xanh dương thay vì gradient như ảnh 1 */
-  color: var(--accent); 
+  color: var(--accent);
   background: none;
   -webkit-background-clip: unset;
   -webkit-text-fill-color: unset;
@@ -30,44 +40,224 @@
 
 .upload-sub {
   color: var(--text-muted);
-  font-size: 1.1rem;
-  max-width: 600px;
+  font-size: 1.05rem;
+  max-width: 560px;
   line-height: 1.6;
-  margin: 1rem auto;
+  margin: 0.75rem auto 0;
 }
 
+/* ── Drop zone ───────────────────────────────────────────────────── */
 .dropzone {
-  background: var(--surface);
-  /* FIX: Border đứt nét rộng, nhạt và bo góc 16px */
-  border: 2px dashed #cbd5e1; 
-  border-radius: 16px; 
-  padding: 3rem 2rem; /* Tăng padding để ô to ra */
-  width: 100%; /* Căn đều 100% không gian */
+  width: 100%;
+  border: 2px dashed var(--border-bright);
+  border-radius: 16px;
+  padding: 3rem 2rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 1rem;
-  box-shadow: var(--shadow);
-  transition: all 0.2s ease;
   cursor: pointer;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  transition: border-color 0.2s, background 0.2s;
 }
 
-.dropzone:hover, .dropzone.drag-active {
+.dropzone:hover,
+.dropzone.drag-active {
   border-color: var(--accent);
-  background: #eff6ff;          /* blue-50 tint on hover */
+  background: color-mix(in srgb, var(--accent) 5%, var(--surface));
 }
 
-/* FIX: Tăng size icon và làm text nổi bật hơn */
-.dz-icon  { color: var(--accent); font-size: 2.5rem; margin-bottom: 0.5rem; }
-.dz-label { color: var(--text); font-weight: 700; font-size: 1.25rem; }
-.dz-sub   { color: var(--text-muted); font-family: var(--font-mono); font-size: 0.9rem; }
+.dz-icon  { color: var(--accent); margin-bottom: 0.25rem; }
+.dz-label { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+.dz-sub   {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
 
+/* ── LOADING ZONE ────────────────────────────────────────────────── */
+/*    Đây là phần quan trọng: chiếm đúng vị trí của dropzone,
+      căn giữa hoàn toàn, không bị lệch sang trái               */
+.loading-zone {
+  width: 100%;
+  min-height: 340px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;        /* ← căn giữa ngang */
+  justify-content: center;    /* ← căn giữa dọc */
+  gap: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  box-shadow: var(--shadow);
+  animation: lzFadeIn 0.35s ease;
+}
+
+@keyframes lzFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Spinner ─────────────────────────────────────────────────────── */
+.lz-spinner-wrap {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lz-spinner {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.lz-ring {
+  position: absolute;
+  border-radius: 50%;
+  border-style: solid;
+  border-color: transparent;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Outer ring — slowest */
+.lz-ring-outer {
+  width: 80px;
+  height: 80px;
+  border-width: 3px;
+  border-top-color: var(--accent);
+  animation: spinCW 1.4s linear infinite;
+}
+
+/* Middle ring — medium */
+.lz-ring-middle {
+  width: 58px;
+  height: 58px;
+  border-width: 3px;
+  border-top-color: var(--accent2);
+  border-right-color: var(--accent2);
+  animation: spinCCW 1s linear infinite;
+}
+
+/* Inner ring — fastest */
+.lz-ring-inner {
+  width: 36px;
+  height: 36px;
+  border-width: 2.5px;
+  border-top-color: var(--EQ);
+  animation: spinCW 0.7s linear infinite;
+}
+
+@keyframes spinCW  { to { transform: translate(-50%, -50%) rotate(360deg);  } }
+@keyframes spinCCW { to { transform: translate(-50%, -50%) rotate(-360deg); } }
+
+/* ── Step text ───────────────────────────────────────────────────── */
+.lz-step-text {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-align: center;
+  min-height: 1.4em;
+  animation: lzPulse 2s ease-in-out infinite;
+}
+
+@keyframes lzPulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.65; }
+}
+
+.lz-step-icon {
+  font-size: 1rem;
+  animation: none;
+}
+
+/* ── Progress dots ───────────────────────────────────────────────── */
+.lz-dots {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.lz-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: background 0.3s, transform 0.3s;
+}
+
+.lz-dot.done {
+  background: var(--accent2);
+  transform: scale(0.9);
+}
+
+.lz-dot.active {
+  background: var(--accent);
+  transform: scale(1.3);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+/* ── Step list ───────────────────────────────────────────────────── */
+.lz-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  max-width: 340px;
+}
+
+.lz-step-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.25s ease;
+}
+
+.lz-step-check {
+  font-size: 0.75rem;
+  min-width: 14px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.step-done {
+  color: var(--accent2);
+  opacity: 0.7;
+}
+.step-done .lz-step-check { color: var(--accent2); }
+
+.step-active {
+  color: var(--text);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  font-weight: 600;
+}
+.step-active .lz-step-check { color: var(--accent); }
+
+.step-pending {
+  color: var(--text-dim);
+}
+.step-pending .lz-step-check { color: var(--text-dim); }
+
+/* ── Capability cards ────────────────────────────────────────────── */
 .capabilities {
   width: 100%;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 1rem; /* FIX: Tăng khoảng cách (gap) giữa các thẻ */
+  gap: 1rem;
 }
 
 @media (max-width: 700px) {
@@ -78,27 +268,27 @@
   background: var(--surface);
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
-  /* FIX: Bo góc và thêm padding cho từng thẻ */
   border-radius: var(--radius);
-  padding: 1.2rem 1rem; 
+  padding: 1.2rem 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.cap-code { 
-  font-family: var(--font-mono); 
-  font-size: 0.9rem; 
-  font-weight: 700; 
+.cap-code {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 700;
 }
 
-/* FIX: Tự động lên màu cho các chữ EI, EO, EQ, ILF, EIF giống ảnh 2 
-   (Nếu trong HTML bạn có gán class tương ứng, hoặc dùng pseudo-class như dưới đây) */
-.cap-card:nth-child(1) .cap-code { color: var(--EI); }
-.cap-card:nth-child(2) .cap-code { color: var(--EO); }
-.cap-card:nth-child(3) .cap-code { color: var(--EQ); }
-.cap-card:nth-child(4) .cap-code { color: var(--ILF); }
-.cap-card:nth-child(5) .cap-code { color: var(--EIF); }
+.cap-label {
+  color: var(--text);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
 
-.cap-label { color: var(--text); font-weight: 700; font-size: 0.95rem; }
-.cap-desc  { color: var(--text-muted); font-size: 0.8rem; line-height: 1.4; }
+.cap-desc {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}

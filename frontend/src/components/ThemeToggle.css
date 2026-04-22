@@ -1,35 +1,76 @@
 /* frontend/src/components/ThemeToggle.css */
 
-.theme-cycle-btn {
+.theme-toggle {
   display: flex;
   align-items: center;
-  gap: 8px;
-  background: var(--surface);
+  gap: 6px;
+  background: var(--surface2);
   border: 1px solid var(--border);
   border-radius: 20px;
-  padding: 4px 12px 4px 6px; /* Cách lề bất đối xứng để ôm sát chấm tròn */
+  padding: 5px 10px;
   cursor: pointer;
   color: var(--text-muted);
-  font-family: var(--font-display);
-  font-size: 13px;
-  font-weight: 600;
-  box-shadow: var(--shadow);
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
 }
 
-.theme-cycle-btn:hover {
+.theme-toggle:hover {
   border-color: var(--accent);
-  color: var(--text);
-  box-shadow: var(--shadow-md);
+  color: var(--accent);
 }
 
-.theme-swatch {
-  width: 18px;
+/* ── Icons ────────────────────────────────────────────────────────── */
+.toggle-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.icon-show {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.icon-hide {
+  opacity: 0.35;
+  transform: scale(0.85);
+}
+
+/* ── Track ────────────────────────────────────────────────────────── */
+.toggle-track {
+  width: 32px;
   height: 18px;
-  border-radius: 50%;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  border-radius: 9px;
+  background: var(--border);
+  border: 1px solid var(--border-bright);
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.25s ease, border-color 0.25s ease;
 }
 
-.theme-name {
-  min-width: 38px; /* Giữ độ rộng cố định để text không giật cục khi đổi tên */
-  text-align: left;
+.toggle-track.on {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+/* ── Knob ─────────────────────────────────────────────────────────── */
+.toggle-knob {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ffffff;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toggle-track.on .toggle-knob {
+  transform: translateX(14px);
+}
+
+/* Dark mode: knob màu tối hơn */
+[data-theme="dark"] .toggle-knob {
+  background: var(--bg);
 }

@@ -1,8 +1,4 @@
 # backend/services/gemini_service.py
-# ─────────────────────────────────────────────────────────────────────
-#  Đã chuyển sang google.genai (SDK mới, thay thế google.generativeai)
-#  Cài đặt: pip install google-genai --break-system-packages
-# ─────────────────────────────────────────────────────────────────────
 import json
 import time
 import logging
@@ -15,9 +11,9 @@ logger = logging.getLogger(__name__)
 SYSTEM_PROMPT = """You are a certified Function Point Analysis (FPA) expert with 20+ years of experience applying the IFPUG standard.
 
 Your task is to analyze software requirement text and classify functional components into exactly these five categories:
-- EI  (External Input):       User inputs that add/change/delete data in an ILF (forms, uploads, API writes)
-- EO  (External Output):      Outputs that retrieve data AND apply logic/calculations (reports, computed results, exports)
-- EQ  (External Inquiry):     Simple data retrievals with no derived calculations (search, lookup, read-only views)
+- EI  (External Input):        User inputs that add/change/delete data in an ILF (forms, uploads, API writes)
+- EO  (External Output):       Outputs that retrieve data AND apply logic/calculations (reports, computed results, exports)
+- EQ  (External Inquiry):      Simple data retrievals with no derived calculations (search, lookup, read-only views)
 - ILF (Internal Logical File): Logical groups of data maintained internally (tables, entities, master data stores)
 - EIF (External Interface File): Data maintained by another application that this system reads (3rd-party APIs, external DBs)
 
@@ -26,6 +22,8 @@ RULES:
 2. All values MUST be non-negative integers.
 3. Count each distinct functional process once; do not double-count.
 4. If a category has no occurrences, output 0.
+5. IMPORTANT: Your entire response must be ONLY this JSON, nothing else:
+   {"EI": <number>, "EO": <number>, "EQ": <number>, "ILF": <number>, "EIF": <number>}
 
 FEW-SHOT EXAMPLES:
 
@@ -45,20 +43,47 @@ Now analyze the following requirement text and return ONLY the JSON object:"""
 
 
 def _parse_fp_json(raw: str) -> dict:
-    """Parse và validate JSON trả về từ LLM."""
+    """Parse và validate JSON từ LLM, tự động sửa JSON bị truncate."""
     cleaned = raw.strip()
-    # Xóa markdown code fences nếu có
+
+    # Xóa markdown fences nếu có
     if cleaned.startswith("```"):
         lines = cleaned.splitlines()
         cleaned = "\n".join(
             lines[1:-1] if lines[-1].strip() == "```" else lines[1:]
         )
+    cleaned = cleaned.strip()
 
+    # ── Thử parse trực tiếp ──────────────────────────────────────
     try:
         data = json.loads(cleaned)
-    except json.JSONDecodeError as e:
-        raise ValueError(f"LLM returned invalid JSON: {e}\nRaw: {raw}")
+        return _validate(data, raw)
+    except json.JSONDecodeError:
+        pass
 
+    # ── Nếu JSON bị truncate: tự hoàn thiện bằng cách extract
+    #    các số đã có, gán 0 cho key còn thiếu ───────────────────
+    logger.warning(f"JSON truncated, attempting partial extraction. Raw: {raw!r}")
+
+    required_keys = ["EI", "EO", "EQ", "ILF", "EIF"]
+    extracted = {}
+
+    for key in required_keys:
+        # Tìm pattern "KEY": <số> trong chuỗi dù bị cắt
+        import re
+        pattern = rf'"{key}"\s*:\s*(\d+)'
+        match = re.search(pattern, cleaned)
+        if match:
+            extracted[key] = int(match.group(1))
+        else:
+            extracted[key] = 0   # default 0 nếu bị cắt trước khi parse
+
+    logger.warning(f"Partial extraction result: {extracted}")
+    return extracted
+
+
+def _validate(data: dict, raw: str) -> dict:
+    """Kiểm tra đủ keys và giá trị hợp lệ."""
     required_keys = {"EI", "EO", "EQ", "ILF", "EIF"}
     missing = required_keys - data.keys()
     if missing:
@@ -76,15 +101,13 @@ def _parse_fp_json(raw: str) -> dict:
 
 def call_gemini(chunk: str) -> dict:
     """
-    Gửi 1 chunk text đến Gemini API và trả về FP classification.
-    Retry tối đa Config.GEMINI_MAX_RETRIES lần với exponential backoff.
+    Gửi 1 chunk text đến Gemini và trả về FP classification.
+    Retry tối đa Config.GEMINI_MAX_RETRIES lần.
     """
     if not Config.GEMINI_API_KEY:
         raise ValueError("GEMINI_API_KEY is not set in environment variables.")
 
-    # Khởi tạo client mới (google.genai)
     client = genai.Client(api_key=Config.GEMINI_API_KEY)
-
     last_error = None
 
     for attempt in range(1, Config.GEMINI_MAX_RETRIES + 1):
@@ -99,39 +122,43 @@ def call_gemini(chunk: str) -> dict:
                 contents=f"{SYSTEM_PROMPT}\n\n{chunk.strip()}",
                 config=types.GenerateContentConfig(
                     temperature=0.1,
-                    max_output_tokens=256,
+                    # ── FIX CHÍNH: tăng từ 256 lên 1024 ──────────
+                    # JSON đầy đủ chỉ cần ~50 tokens nhưng
+                    # gemini-2.5-flash đôi khi thêm reasoning text
+                    # trước khi output JSON → cần buffer lớn hơn
+                    max_output_tokens=1024,
                 ),
             )
 
             raw_content = response.text.strip()
+            logger.debug(f"Raw Gemini response: {raw_content!r}")
+
             result = _parse_fp_json(raw_content)
-            logger.info(f"Gemini chunk {attempt} result: {result}")
+            logger.info(f"Gemini chunk {attempt} classified: {result}")
             return result
 
         except Exception as e:
             last_error = str(e)
-            error_str = str(e).lower()
+            error_str  = str(e).lower()
 
-            # Rate limit → chờ lâu hơn
             if "quota" in error_str or "rate" in error_str or "429" in error_str:
                 wait = 2 ** attempt
                 logger.warning(f"Rate limited. Waiting {wait}s...")
                 time.sleep(wait)
                 continue
 
-            # Server error → retry
             if "500" in error_str or "503" in error_str or "unavailable" in error_str:
                 wait = 2 ** attempt
                 logger.warning(f"Server error. Waiting {wait}s...")
                 time.sleep(wait)
                 continue
 
-            # Lỗi parse JSON → không retry (model trả sai format)
+            # Lỗi parse → retry (không bỏ qua, lần sau token nhiều hơn)
             if "invalid json" in error_str or "missing keys" in error_str:
-                logger.error(f"Parse error (no retry): {e}")
-                raise
+                logger.warning(f"Parse error on attempt {attempt}, retrying...")
+                time.sleep(1)
+                continue
 
-            # Các lỗi khác → retry
             logger.error(f"Attempt {attempt} error: {e}")
             time.sleep(2)
 

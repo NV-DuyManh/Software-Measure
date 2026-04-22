@@ -1,10 +1,17 @@
+/* frontend/src/index.css */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap');
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-/* ─── LIGHT THEME (default) ─────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════
+   LIGHT THEME (mặc định)
+═══════════════════════════════════════════════════════════════════ */
 :root {
-  --bg:            #fdfdfd; /*nơi đổi màu BG*/
+  --bg:            #f8f9fa;
   --surface:       #ffffff;
   --surface2:      #f3f4f6;
   --border:        #e5e7eb;
@@ -18,14 +25,15 @@
   --text-muted: #6b7280;
   --text-dim:   #9ca3af;
 
+  /* Chart colors */
   --EI:  #2563eb;
   --EO:  #16a34a;
   --EQ:  #7c3aed;
   --ILF: #ea580c;
   --EIF: #ca8a04;
 
-  --shadow:    0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
-  --shadow-md: 0 4px 6px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.03);
+  --shadow:    0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
 
   --font-display: 'Inter', 'Syne', system-ui, sans-serif;
   --font-mono:    'JetBrains Mono', monospace;
@@ -33,7 +41,9 @@
   --radius-sm: 8px;
 }
 
-/* ─── DARK THEME ─────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════
+   DARK THEME — áp dụng khi <html data-theme="dark">
+═══════════════════════════════════════════════════════════════════ */
 [data-theme="dark"] {
   --bg:            #080c10;
   --surface:       #0e1419;
@@ -49,6 +59,7 @@
   --text-muted: #5a7a96;
   --text-dim:   #3a5a76;
 
+  /* Chart colors — neon cho dark mode */
   --EI:  #00d4ff;
   --EO:  #00ff88;
   --EQ:  #a78bfa;
@@ -59,74 +70,52 @@
   --shadow-md: 0 4px 6px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.3);
 }
 
-/* Theme 3: Mint Pink */
-[data-theme="mint-pink"] {
-  --bg: linear-gradient(-225deg, #E3FDF5 0%, #FFE6FA 100%);
-  --surface: rgba(255, 255, 255, 0.75); /* Bán trong suốt tạo hiệu ứng kính */
-  --surface2: rgba(255, 255, 255, 0.5);
-  --border: rgba(255, 255, 255, 0.6);
-  --border-bright: #ffffff;
-  --text: #111827;
-  --text-muted: #6b7280;
+/* ═══════════════════════════════════════════════════════════════════
+   GLOBAL TRANSITION — smooth khi chuyển theme
+   (chỉ transition color/background, KHÔNG transition transform
+    để tránh làm chậm animation khác)
+═══════════════════════════════════════════════════════════════════ */
+html {
+  scroll-behavior: smooth;
 }
-
-/* Theme 4: Rose Blue */
-[data-theme="rose-blue"] {
-  --bg: linear-gradient(to top, #f3e7e9 0%, #e3eeff 99%, #e3eeff 100%);
-  --surface: rgba(255, 255, 255, 0.75);
-  --surface2: rgba(255, 255, 255, 0.5);
-  --border: rgba(255, 255, 255, 0.6);
-  --border-bright: #ffffff;
-  --text: #111827;
-  --text-muted: #6b7280;
-}
-
-/* Theme 5: Peach */
-[data-theme="peach"] {
-  --bg: linear-gradient(to top, #feada6 0%, #f5efef 100%);
-  --surface: rgba(255, 255, 255, 0.75);
-  --surface2: rgba(255, 255, 255, 0.5);
-  --border: rgba(255, 255, 255, 0.6);
-  --border-bright: #ffffff;
-  --text: #111827;
-  --text-muted: #6b7280;
-}
-
-/* Theme 6: 7 sắc cầu vòng */
-[data-theme="7saccauvong"] {
-  --bg: radial-gradient(circle farthest-corner at center center, #FF0000 0%, #FFFF00 25%, #05C1FF 50%, #FFFF00 75%, #FF0000 100%);
-  --surface: rgba(255, 255, 255, 0.75);
-  --surface2: rgba(255, 255, 255, 0.5);
-  --border: rgba(255, 255, 255, 0.6);
-  --border-bright: #ffffff;
-  --text: #111827;
-  --text-muted: #6b7280;
-}
-/* ─── BASE ───────────────────────────────────────────────────────── */
-html { scroll-behavior: smooth; }
 
 body {
-  background:   var(--bg);
-  color:        var(--text);
-  font-family:  var(--font-display);
-  min-height:   100vh;
-  overflow-x:   hidden;
-  /* smooth theme transition */
+  background:  var(--bg);
+  color:       var(--text);
+  font-family: var(--font-display);
+  min-height:  100vh;
+  overflow-x:  hidden;
+  /* Transition khi đổi theme */
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-/* Propagate transition to common surfaces */
-*, *::before, *::after {
-  transition-property: background-color, border-color, color, box-shadow;
+/* Áp dụng transition cho tất cả elements phổ biến */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color;
   transition-duration: 0.25s;
   transition-timing-function: ease;
 }
 
-/* But don't slow down animations that should stay fast */
-button, input, .spinner-ring, [class*="bar-fill"] {
-  transition-duration: 0.15s;
+/* Loại trừ những thứ KHÔNG nên transition (animation sẽ bị lag) */
+.spinner-ring,
+.lz-ring,
+.lz-ring-outer,
+.lz-ring-middle,
+.lz-ring-inner,
+.toggle-knob,
+[class*="bar-fill"],
+[class*="animation"],
+svg,
+svg * {
+  transition: none !important;
 }
 
-::-webkit-scrollbar { width: 6px; }
+/* Scrollbar */
+::-webkit-scrollbar       { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 3px; }
+::-webkit-scrollbar-thumb {
+  background: var(--border-bright);
+  border-radius: 3px;
+}
