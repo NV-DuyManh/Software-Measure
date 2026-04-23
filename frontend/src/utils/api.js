@@ -61,6 +61,14 @@ export async function getHistory() {
   return handleRes(res);
 }
 
+// ─── UPLOAD HISTORY (Task 1) ──────────────────────────────────────
+export async function getUploadHistory() {
+  const res = await fetch(`${BASE_NODE}/api/history/uploads`, {
+    headers: authHeaders(),
+  });
+  return handleRes(res);
+}
+
 export async function getHistoryDetail(uploadId) {
   const res = await fetch(`${BASE_NODE}/api/history/${uploadId}`, {
     headers: authHeaders(),
@@ -100,4 +108,31 @@ export async function recalculate(counts) {
 export function getExportUrl(uploadId, format) {
   const token = localStorage.getItem("fp_token");
   return `${BASE_NODE}/api/export/${uploadId}/${format}?token=${token}`;
+}
+
+// ─── EXPORT via POST (Task 2) ─────────────────────────────────────
+export async function exportExcel(payload) {
+  const res = await fetch(`${BASE_NODE}/api/export/excel`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders() },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Excel export failed");
+  }
+  return res.blob();
+}
+
+export async function exportPdf(payload) {
+  const res = await fetch(`${BASE_NODE}/api/export/pdf`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders() },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "PDF export failed");
+  }
+  return res.blob();
 }

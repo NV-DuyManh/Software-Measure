@@ -100,21 +100,32 @@
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
   border-radius: var(--radius);
-  padding: 1.5rem;
-
+  padding: 1.5rem 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* căn giữa ngang */
   justify-content: center;
-  /* căn giữa dọc */
   text-align: center;
+  min-height: 120px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
 
-  min-height: 110px;
-  /* giữ chiều cao đều */
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: currentColor;
+  opacity: 0.5;
+  border-radius: var(--radius) var(--radius) 0 0;
 }
 
 .kpi-card:hover {
+  transform: translateY(-2px);
   box-shadow: var(--shadow-md);
   border-color: var(--border-bright);
 }
@@ -128,18 +139,19 @@
 }
 
 .kpi-value {
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-weight: 800;
   line-height: 1.1;
-
-  margin: 0.25rem 0;
-  /* tạo khoảng giữa */
+  margin: 0.3rem 0;
+  letter-spacing: -0.02em;
 }
 
 .kpi-unit {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 /* Body */
@@ -322,6 +334,23 @@
   text-align: right;
 }
 
+/* ── Component explanation (AI-generated) ────────────────────── */
+.comp-row-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.comp-explanation {
+  font-size: 0.74rem;
+  font-style: italic;
+  color: var(--text-dim);
+  padding: 4px 10px 6px 12px;
+  margin: 0;
+  border-left: 2px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  line-height: 1.4;
+}
+
 .recalc-btn {
   width: 100%;
   padding: 0.9rem;
@@ -329,7 +358,14 @@
   letter-spacing: 0.06em;
   margin-top: 1.5rem;
   border-radius: var(--radius-sm);
-  /* FIX: Bo góc nút */
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.recalc-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
 }
 
 .recalc-btn:disabled {

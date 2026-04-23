@@ -4,19 +4,41 @@ import ThemeToggle    from "./ThemeToggle";
 import { useAuth }    from "../context/AuthContext";
 import "./Header.css";
 
-export default function Header({ onLoginClick }) {
+export default function Header({ onLoginClick, onNavigate, page }) {
   const { theme, cycleTheme } = useTheme(); // <-- Sửa toggle thành cycleTheme
   const { user, logout }  = useAuth();
 
   return (
     <header className="header">
       <div className="header-inner">
-        {/* Logo */}
-        <div className="logo">
-          <span className="logo-bracket">[</span>
-          <span className="logo-text">FP</span>
-          <span className="logo-accent">Estimator</span>
-          <span className="logo-bracket">]</span>
+        {/* Logo + Nav */}
+        <div className="header-left">
+          <div className="logo">
+            <span className="logo-bracket">[</span>
+            <span className="logo-text">FP</span>
+            <span className="logo-accent">Estimator</span>
+            <span className="logo-bracket">]</span>
+          </div>
+
+          {/* Navigation — only when logged in */}
+          {user && (
+            <nav className="header-nav">
+              <button
+                className={`nav-link ${page === "main" ? "active" : ""}`}
+                onClick={() => onNavigate("main")}
+                id="nav-home"
+              >
+                Home
+              </button>
+              <button
+                className={`nav-link ${page === "history" ? "active" : ""}`}
+                onClick={() => onNavigate("history")}
+                id="nav-history"
+              >
+                📋 History
+              </button>
+            </nav>
+          )}
         </div>
 
         {/* Right side */}
@@ -52,4 +74,4 @@ export default function Header({ onLoginClick }) {
       <div className="header-line" />
     </header>
   );
-}
+}

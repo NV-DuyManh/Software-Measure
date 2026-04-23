@@ -6,6 +6,7 @@ import Header        from "./components/Header";
 import Sidebar       from "./components/Sidebar";
 import AuthModal     from "./components/AuthModal";
 import ExportButtons from "./components/ExportButtons";
+import HistoryPage   from "./components/HistoryPage";
 import { analyzeDocument, getHistoryDetail } from "./utils/api";
 import { useAuth }   from "./context/AuthContext";
 import "./App.css";
@@ -28,6 +29,7 @@ export default function App() {
   const [loadingStep,  setLoadingStep]  = useState("");
   const [showAuth,     setShowAuth]     = useState(false);
   const [activeUpload, setActiveUpload] = useState(null);
+  const [page,         setPage]         = useState("main"); // "main" | "history"
 
   // ── Upload file mới ────────────────────────────────────────────
   async function handleFile(file) {
@@ -121,41 +123,55 @@ export default function App() {
       )}
 
       <div className="app-main">
-        <Header onLoginClick={() => setShowAuth(true)} />
+        <Header
+          onLoginClick={() => setShowAuth(true)}
+          onNavigate={setPage}
+          page={page}
+        />
 
         <main className="main">
 
-          {/* ── IDLE & LOADING: cùng chung UploadZone ── */}
-          {(state === "idle" || state === "loading") && (
-            <UploadZone
-              onFile={handleFile}
-              isLoading={isLoading}
-              loadingStep={loadingStep}
-            />
+          {/* ── HISTORY PAGE ── */}
+          {page === "history" && (
+            <HistoryPage onBack={() => setPage("main")} />
           )}
 
-          {/* ── ERROR ── */}
-          {state === "error" && (
-            <div className="error-screen">
-              <div className="error-icon">⚠</div>
-              <h2>Analysis Failed</h2>
-              <p className="error-msg">{error}</p>
-              <button className="btn-primary" onClick={handleReset}>
-                Try Again
-              </button>
-            </div>
-          )}
-
-          {/* ── DONE ── */}
-          {state === "done" && result && (
+          {/* ── MAIN VIEW ── */}
+          {page === "main" && (
             <>
-              <ExportButtons uploadId={activeUpload} />
-              <Dashboard
-                data={result}
-                onReset={handleReset}
-                resultId={result.resultId}
-                uploadId={activeUpload}
-              />
+              {/* ── IDLE & LOADING: cùng chung UploadZone ── */}
+              {(state === "idle" || state === "loading") && (
+                <UploadZone
+                  onFile={handleFile}
+                  isLoading={isLoading}
+                  loadingStep={loadingStep}
+                />
+              )}
+
+              {/* ── ERROR ── */}
+              {state === "error" && (
+                <div className="error-screen">
+                  <div className="error-icon">⚠</div>
+                  <h2>Analysis Failed</h2>
+                  <p className="error-msg">{error}</p>
+                  <button className="btn-primary" onClick={handleReset}>
+                    Try Again
+                  </button>
+                </div>
+              )}
+
+              {/* ── DONE ── */}
+              {state === "done" && result && (
+                <>
+                  <ExportButtons uploadId={activeUpload} />
+                  <Dashboard
+                    data={result}
+                    onReset={handleReset}
+                    resultId={result.resultId}
+                    uploadId={activeUpload}
+                  />
+                </>
+              )}
             </>
           )}
 

@@ -20,7 +20,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 14px;
+  padding: 8px 16px;
   border-radius: var(--radius-sm);
   font-family: var(--font-display);
   font-size: 0.85rem;
@@ -29,11 +29,13 @@
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--text-muted);
-  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  transition: all 0.2s ease;
 }
 
 .export-btn:hover {
   background: var(--surface2);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .export-excel:hover {
@@ -45,3 +47,28 @@
   border-color: var(--accent3);
   color: var(--accent3);
 }
+
+.export-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.export-btn:disabled:hover {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--text-muted);
+}
+
+.export-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: export-spin 0.6s linear infinite;
+}
+
+@keyframes export-spin {
+  to { transform: rotate(360deg); }
+}
+

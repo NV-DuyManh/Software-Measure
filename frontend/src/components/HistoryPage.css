@@ -1,0 +1,378 @@
+/* frontend/src/components/HistoryPage.css */
+/* ─────────────────────────────────────────────────────────────────
+   Task 1: History page styles — consistent with existing design system
+   ───────────────────────────────────────────────────────────────── */
+
+.history-page {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  animation: hp-fadeIn 0.35s ease;
+}
+
+@keyframes hp-fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Header bar ─────────────────────────────────────────────────── */
+.hp-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.hp-title {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--text);
+  flex: 1;
+}
+
+.hp-back {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 6px 14px;
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.hp-back:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.hp-refresh {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 6px 14px;
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.hp-refresh:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.hp-refresh:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Error state ────────────────────────────────────────────────── */
+.hp-error {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--accent3);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  font-size: 0.88rem;
+  color: var(--accent3);
+}
+.hp-error-icon {
+  font-size: 1.2rem;
+}
+
+/* ── Loading state ──────────────────────────────────────────────── */
+.hp-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 3rem 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.hp-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: hp-spin 0.7s linear infinite;
+}
+
+@keyframes hp-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Empty state ────────────────────────────────────────────────── */
+.hp-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 4rem 0;
+  text-align: center;
+}
+.hp-empty-icon {
+  font-size: 3rem;
+  opacity: 0.6;
+}
+.hp-empty h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.hp-empty p {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+/* ── Table wrapper ──────────────────────────────────────────────── */
+.hp-table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.hp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.hp-table thead {
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+}
+
+.hp-table th {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  padding: 12px 16px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.hp-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.hp-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ── Row hover ──────────────────────────────────────────────────── */
+.hp-row {
+  transition: background 0.15s;
+}
+.hp-row:hover {
+  background: var(--surface2);
+}
+
+/* ── Cell: number ───────────────────────────────────────────────── */
+.hp-cell-num {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  width: 40px;
+  text-align: center;
+}
+
+/* ── Cell: file name ────────────────────────────────────────────── */
+.hp-file-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.hp-file-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.hp-file-name {
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 280px;
+}
+
+/* ── Cell: time ─────────────────────────────────────────────────── */
+.hp-cell-time {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* ── Cell: result chips ─────────────────────────────────────────── */
+.hp-result-chips {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.hp-chip {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.hp-chip-fp {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+.hp-chip-effort {
+  background: color-mix(in srgb, var(--accent2) 12%, transparent);
+  color: var(--accent2);
+  border: 1px solid color-mix(in srgb, var(--accent2) 25%, transparent);
+}
+
+.hp-chip-cost {
+  background: color-mix(in srgb, var(--accent3) 12%, transparent);
+  color: var(--accent3);
+  border: 1px solid color-mix(in srgb, var(--accent3) 25%, transparent);
+}
+
+.hp-no-result {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+
+/* ── Cell: export buttons (Task 2) ──────────────────────────────── */
+.hp-cell-export {
+  white-space: nowrap;
+}
+
+.hp-export-btns {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hp-export-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: opacity 0.15s, transform 0.1s, box-shadow 0.15s;
+  min-width: 72px;
+  justify-content: center;
+}
+.hp-export-btn:hover:not(:disabled) {
+  opacity: 0.88;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+.hp-export-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.hp-export-excel {
+  background: #059669;
+  color: #fff;
+  border-color: #047857;
+}
+
+.hp-export-pdf {
+  background: #dc2626;
+  color: #fff;
+  border-color: #b91c1c;
+}
+
+[data-theme="dark"] .hp-export-excel {
+  background: #065f46;
+  border-color: #047857;
+}
+[data-theme="dark"] .hp-export-pdf {
+  background: #991b1b;
+  border-color: #b91c1c;
+}
+
+/* Small spinner inside export button */
+.hp-btn-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: hp-spin 0.6s linear infinite;
+}
+
+/* ── Footer ─────────────────────────────────────────────────────── */
+.hp-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 4px;
+}
+
+.hp-count {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+/* ── Responsive ─────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .hp-table th,
+  .hp-table td {
+    padding: 10px 10px;
+    font-size: 0.8rem;
+  }
+
+  .hp-file-name {
+    max-width: 140px;
+  }
+
+  .hp-result-chips {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+  }
+
+  .hp-header {
+    flex-wrap: wrap;
+  }
+
+  .hp-export-btns {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .hp-export-btn {
+    font-size: 0.68rem;
+    padding: 4px 8px;
+    min-width: 60px;
+  }
+}
+

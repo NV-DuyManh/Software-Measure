@@ -75,7 +75,19 @@ CREATE TABLE IF NOT EXISTS vaf_factors (
   FOREIGN KEY (result_id) REFERENCES fp_results(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- ─── UPLOAD HISTORY (Task 1: file upload tracking with SHA-256) ───
+CREATE TABLE IF NOT EXISTS upload_history (
+  id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id     INT UNSIGNED NOT NULL,
+  file_name   VARCHAR(255) NOT NULL,
+  file_hash   CHAR(64)     NOT NULL COMMENT 'SHA-256 hex digest',
+  upload_time DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  result      TEXT,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- ─── INDEXES ──────────────────────────────────────────────────────
-CREATE INDEX idx_uploads_user   ON uploads(user_id);
-CREATE INDEX idx_uploads_date   ON uploads(uploaded_at DESC);
-CREATE INDEX idx_results_upload ON fp_results(upload_id);
+CREATE INDEX idx_uploads_user        ON uploads(user_id);
+CREATE INDEX idx_uploads_date        ON uploads(uploaded_at DESC);
+CREATE INDEX idx_results_upload      ON fp_results(upload_id);
+CREATE INDEX idx_upload_history_user ON upload_history(user_id);

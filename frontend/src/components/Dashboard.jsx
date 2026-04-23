@@ -142,39 +142,47 @@ export default function Dashboard({ data, onReset, resultId, uploadId }) {
           </p>
 
           <div className="component-list">
-            {COMPONENTS.map((key) => (
-              <div key={key} className="comp-row">
-                <div className="comp-info">
-                  <span className="comp-code" style={{ color: `var(--${key})` }}>
-                    {key}
-                  </span>
-                  <span className="comp-name">{LABELS[key]}</span>
-                  <span className="comp-weight">
-                    ×{metrics.weights[key]} pts
-                  </span>
+            {COMPONENTS.map((key) => {
+              const explanation = data.explanations?.[key];
+              return (
+                <div key={key} className="comp-row-wrap">
+                  <div className="comp-row">
+                    <div className="comp-info">
+                      <span className="comp-code" style={{ color: `var(--${key})` }}>
+                        {key}
+                      </span>
+                      <span className="comp-name">{LABELS[key]}</span>
+                      <span className="comp-weight">
+                        ×{metrics.weights[key]} pts
+                      </span>
+                    </div>
+                    <div className="comp-controls">
+                      <button
+                        className="stepper"
+                        onClick={() => handleChange(key, counts[key] - 1)}
+                      >−</button>
+                      <input
+                        type="number"
+                        min="0"
+                        value={counts[key]}
+                        onChange={e => handleChange(key, e.target.value)}
+                        className="count-input"
+                      />
+                      <button
+                        className="stepper"
+                        onClick={() => handleChange(key, counts[key] + 1)}
+                      >+</button>
+                    </div>
+                    <span className="comp-pts">
+                      {counts[key] * metrics.weights[key]} pts
+                    </span>
+                  </div>
+                  {explanation && (
+                    <p className="comp-explanation">→ {explanation}</p>
+                  )}
                 </div>
-                <div className="comp-controls">
-                  <button
-                    className="stepper"
-                    onClick={() => handleChange(key, counts[key] - 1)}
-                  >−</button>
-                  <input
-                    type="number"
-                    min="0"
-                    value={counts[key]}
-                    onChange={e => handleChange(key, e.target.value)}
-                    className="count-input"
-                  />
-                  <button
-                    className="stepper"
-                    onClick={() => handleChange(key, counts[key] + 1)}
-                  >+</button>
-                </div>
-                <span className="comp-pts">
-                  {counts[key] * metrics.weights[key]} pts
-                </span>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <button

@@ -74,10 +74,17 @@ def analyze():
 
         # Bước 3: Tổng hợp và tính FP
         aggregated = aggregate_classifications(classifications)
+
+        # Extract explanations and items before calculating FP
+        explanations = aggregated.pop("_explanations", {})
+        items        = aggregated.pop("_items", {})
+
         result     = calculate_fp(aggregated)
         result["chunks_processed"] = len(classifications)
         result["chunks_failed"]    = len(errors)
         result["filename"]         = filename
+        result["explanations"]     = explanations
+        result["items"]            = items
 
         return jsonify(result), 200
 

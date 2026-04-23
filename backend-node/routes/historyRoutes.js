@@ -30,6 +30,23 @@ router.get("/", requireAuth, async (req, res) => {
   }
 });
 
+// GET /api/history/uploads — Task 1: upload_history records for current user
+router.get("/uploads", requireAuth, async (req, res) => {
+  try {
+    const [rows] = await pool.query(
+      `SELECT id, file_name, file_hash, upload_time, result
+       FROM upload_history
+       WHERE user_id = ?
+       ORDER BY upload_time DESC`,
+      [req.userId]
+    );
+    res.json({ history: rows });
+  } catch (err) {
+    console.error("Upload history error:", err);
+    res.status(500).json({ error: "Failed to fetch upload history." });
+  }
+});
+
 // GET /api/history/:uploadId — chi tiết 1 upload (bao gồm result + vaf)
 router.get("/:uploadId", requireAuth, async (req, res) => {
   const { uploadId } = req.params;

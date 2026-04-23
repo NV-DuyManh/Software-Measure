@@ -7,6 +7,7 @@ const express  = require("express");
 const fetch    = require("node-fetch");
 const FormData = require("form-data");
 const fs       = require("fs");
+const crypto   = require("crypto");
 const pool     = require("../config/db");
 const { requireAuth } = require("../middleware/auth");
 const upload   = require("../middleware/upload");
@@ -20,6 +21,11 @@ router.post("/", requireAuth, upload.single("file"), async (req, res) => {
   }
 
   const { filename, originalname, size } = req.file;
+
+  // ── Task 1: compute SHA-256 hash of uploaded file ─────────────
+  const fileBuffer = fs.readFileSync(req.file.path);
+  const fileHash   = crypto.createHash("sha256").update(fileBuffer).digest("hex");
+
   const conn = await pool.getConnection();
 
   try {
@@ -68,7 +74,9 @@ router.post("/", requireAuth, upload.single("file"), async (req, res) => {
       );
     }
 
-    const counts = pyData.counts || {};
+    const counts       = pyData.counts || {};
+    const explanations = pyData.explanations || {};
+    const items        = pyData.items || {};
 
     // ── 3. Tính FP với VAF mặc định (fi=0 → VAF=0.65) ──────────
     const sumFi = 0;
@@ -114,6 +122,28 @@ router.post("/", requireAuth, upload.single("file"), async (req, res) => {
       [resultId]
     );
 
+    // ── 5b. Task 1: Lưu vào upload_history (SHA-256) ────────────
+    await conn.query(
+      `INSERT INTO upload_history (user_id, file_name, file_hash, upload_time, result)
+       VALUES (?, ?, ?, NOW(), ?)`,
+      [
+        req.userId,
+        originalname,
+        fileHash,
+        JSON.stringify({
+          fp, ufc, vaf, effort, cost,
+          counts: {
+            EI:  counts.EI  || 0,
+            EO:  counts.EO  || 0,
+            EQ:  counts.EQ  || 0,
+            ILF: counts.ILF || 0,
+            EIF: counts.EIF || 0,
+          },
+          explanations,
+        }),
+      ]
+    );
+
     await conn.commit();
 
     // ── 6. Xóa file tạm sau khi xử lý xong ─────────────────────
@@ -139,6 +169,8 @@ router.post("/", requireAuth, upload.single("file"), async (req, res) => {
       cost,
       chunks_processed: pyData.chunks_processed || 0,
       chunks_failed:    pyData.chunks_failed    || 0,
+      explanations,
+      items,
       vaf_factors: {
         f1:0, f2:0, f3:0, f4:0,  f5:0,  f6:0,  f7:0,
         f8:0, f9:0, f10:0,f11:0, f12:0, f13:0, f14:0,
