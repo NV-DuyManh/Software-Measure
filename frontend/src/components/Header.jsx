@@ -43,7 +43,7 @@ export default function Header({ onLoginClick, onNavigate, page }) {
 
         {/* Right side */}
         <div className="header-meta">
-          <span className="badge">Groq · llama3-70b</span>
+          <span className="badge">Gemini 2.5</span>
           <span className="badge badge-green">IFPUG Standard</span>
 
           {/* Theme toggle: truyền hàm cycleTheme vào */}
@@ -74,4 +74,4 @@ export default function Header({ onLoginClick, onNavigate, page }) {
       <div className="header-line" />
     </header>
   );
-}
+}
