@@ -104,7 +104,7 @@
   --text-muted: #6b7280;
 }
 
-/* [data-theme="rainbow"] {
+[data-theme="rainbow"] {
   --bg: radial-gradient(circle farthest-corner at center center, #FF0000 0%, #FFFF00 25%, #05C1FF 50%, #FFFF00 75%, #FF0000 100%);
   --surface: rgba(255, 255, 255, 0.85); 
   --surface2: rgba(255, 255, 255, 0.65);
@@ -112,7 +112,7 @@
   --border-bright: #ffffff;
   --text: #111827;
   --text-muted: #374151; 
-} */
+}
 
 /* ═══════════════════════════════════════════════════════════════════
    GLOBAL TRANSITION — smooth khi chuyển theme
